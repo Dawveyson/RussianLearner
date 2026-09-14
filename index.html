@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>科大er专属的俄语学习器</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#ffffff; --ink:#1f2733; --sub:#5b6675;
+    --accent:#e8443b; --accent2:#2f6df0; --line:#e7ebf1; --ok:#1f9d55; --err:#d23b3b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:24px 18px 60px}
+  header.hero{
+    background:linear-gradient(135deg,#e8443b,#ff7a59);
+    color:#fff;border-radius:18px;padding:34px 28px;box-shadow:0 10px 30px rgba(232,68,59,.18);
+  }
+  header.hero h1{margin:0 0 6px;font-size:clamp(22px,6vw,30px);letter-spacing:.5px}
+  header.hero p{margin:0;opacity:.95;font-size:15px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:22px}
+  section h2{margin:0 0 14px;font-size:19px;display:flex;align-items:center;gap:8px}
+  section h2 .dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+  .phrases{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .pcard{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fbfcfe}
+  .pcard .ru{font-size:21px;font-weight:600;color:var(--accent2)}
+  .pcard .pr{font-size:13px;color:var(--sub);margin:2px 0}
+  .pcard .zh{font-size:14px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;
+    background:var(--accent);color:#fff;font-size:16px;font-weight:600;
+    padding:13px 22px;border-radius:12px;text-decoration:none;transition:.15s;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(232,68,59,.25)}
+  .btn.ghost{background:var(--accent2)}
+  .dl-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .dl-note{font-size:13px;color:var(--sub)}
+  label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
+  input,select,textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+    font-size:15px;font-family:inherit;background:#fbfcfe;color:var(--ink);
+  }
+  textarea{resize:vertical;min-height:110px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 3px rgba(47,109,240,.12)}
+  .submit-row{margin-top:16px}
+  .status{margin-top:14px;font-size:14px;padding:12px 14px;border-radius:10px;display:none}
+  .status.ok{display:block;background:#eafaf0;color:var(--ok);border:1px solid #bfe9cd}
+  .status.err{display:block;background:#fdeaea;color:var(--err);border:1px solid #f3c9c9}
+  .status.info{display:block;background:#eef3fe;color:var(--accent2);border:1px solid #cdddff}
+  footer{margin-top:30px;text-align:center;color:var(--sub);font-size:13px}
+  a.inline{color:var(--accent2);text-decoration:none}
+  code{background:#eef1f6;padding:2px 6px;border-radius:6px;font-size:13px}
+
+  /* ===== 横屏（手机横向）适配 ===== */
+  @media (orientation: landscape){
+    .wrap{max-width:960px;padding:16px 24px 36px}
+    header.hero{padding:20px 26px;border-radius:14px}
+    header.hero h1{font-size:clamp(20px,3.6vw,26px)}
+    header.hero p{font-size:14px}
+    section{padding:18px;margin-top:16px;border-radius:14px}
+    .phrases{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+    .pcard{padding:11px 13px}
+    .pcard .ru{font-size:19px}
+  }
+
+  /* ===== 竖屏小屏微调 ===== */
+  @media (orientation: portrait) and (max-width:480px){
+    .wrap{padding:16px 13px 44px}
+    header.hero{padding:24px 19px}
+    section{padding:18px 15px}
+    .dl-row{flex-direction:column;align-items:flex-start}
+    .dl-row .btn{width:100%;justify-content:center}
+  }
+
+  /* ===== 超矮横屏（如横置手机且高度很小）进一步压缩 ===== */
+  @media (orientation: landscape) and (max-height:430px){
+    header.hero{padding:14px 24px}
+    section{margin-top:12px;padding:14px}
+    .phrases{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>科大er专属的俄语学习器</h1>
+    <p>给科大学子的极简俄语上手小工具 · 几分钟记住最常用的一句俄语</p>
+  </header>
+
+  <section>
+    <h2><span class="dot"></span>先记住这几句</h2>
+    <div class="phrases" id="phrases"></div>
+  </section>
+
+  <section>
+    <h2><span class="dot"></span>下载安卓 App</h2>
+    <div class="dl-row">
+      <a class="btn" id="dlBtn" href="./app-release.apk" download>📱 下载安卓 App（APK）</a>
+      <span class="dl-note">适用于 Android 手机 · 安装时若提示“未知来源”，请在设置中允许本次安装。</span>
+    </div>
+    <div class="dl-row" style="margin-top:12px">
+      <a class="btn" href="./russian-cheatsheet.pdf" download style="background:#5b6675">📄 备用：俄语速查表 PDF</a>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="dot"></span>意见反馈</h2>
+    <p style="margin:0 0 4px;color:var(--sub);font-size:14px">
+      遇到问题、想加内容、或单纯想夸一句都行。提交后我会在 GitHub 仓库的 Issues 里直接看到。
+    </p>
+
+    <form id="fbForm" novalidate>
+      <label for="nick">昵称（选填）</label>
+      <input id="nick" type="text" maxlength="40" placeholder="匿名科大er" />
+
+      <label for="type">反馈类型</label>
+      <select id="type">
+        <option value="建议">建议 / 想加的内容</option>
+        <option value="Bug">页面或下载有问题</option>
+        <option value="内容纠错">资料有误</option>
+        <option value="其他">其他</option>
+      </select>
+
+      <label for="msg">反馈内容 *</label>
+      <textarea id="msg" placeholder="比如：能不能加一点点餐常用的俄语？" required></textarea>
+
+      <div class="submit-row">
+        <button class="btn ghost" type="submit" id="submitBtn">提交反馈</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </form>
+  </section>
+
+  <footer>
+    科大er专属的俄语学习器 · 静态托管于 GitHub Pages · 反馈直达仓库 Issues
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   反馈配置：把下面三项改成你自己的仓库信息即可。
+   - OWNER / REPO：你的 GitHub 用户名和仓库名
+   - TOKEN：细粒度 PAT，只需该仓库的 issues:write 权限
+     留空则自动改用“打开 Issues 预填页”的方式（需提交者登录 GitHub）
+   详细说明见仓库 README.md
+   ============================================================ */
+const CONFIG = {
+  OWNER: "YOUR_GITHUB_USERNAME",
+  REPO:  "YOUR_REPO_NAME",
+  TOKEN: ""   // 例：github_pat_xxxxxxxxxxxxxxxx
+};
+
+/* 极简俄语短语表（俄语 / 读音 / 中文） */
+const PHRASES = [
+  ["Здравствуйте","Zdrav-stvuy-te","您好"],
+  ["Спасибо","Spa-si-bo","谢谢"],
+  ["Пожалуйста","Po-zhal-sta","不客气 / 请"],
+  ["Да / Нет","Da / Nyet","是 / 否"],
+  ["Извините","Iz-vi-ni-te","对不起 / 打扰了"],
+  ["Я не понимаю","Ya ne po-ni-ma-yu","我听不懂"],
+  ["Где ...?","Gde ...?","……在哪里？"],
+  ["Сколько стоит?","Skol'-ko sto-it?","多少钱？"],
+  ["Меня зовут ...","Me-nya zo-vut ...","我叫……"],
+  ["До свидания","Do svi-da-ni-ya","再见"]
+];
+
+/* 渲染短语卡片 */
+const pBox = document.getElementById("phrases");
+PHRASES.forEach(([ru,pr,zh])=>{
+  const d=document.createElement("div");
+  d.className="pcard";
+  d.innerHTML=`<div class="ru">${ru}</div><div class="pr">${pr}</div><div class="zh">${zh}</div>`;
+  pBox.appendChild(d);
+});
+
+/* 反馈提交 */
+const form=document.getElementById("fbForm");
+const statusEl=document.getElementById("status");
+const submitBtn=document.getElementById("submitBtn");
+
+function show(kind,text){
+  statusEl.className="status "+kind;
+  statusEl.innerHTML=text;
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+form.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const nick=document.getElementById("nick").value.trim()||"匿名科大er";
+  const type=document.getElementById("type").value;
+  const msg=document.getElementById("msg").value.trim();
+  if(!msg){show("err","请先写点反馈内容～");return;}
+
+  const title=`[反馈] ${type} · ${nick}`;
+  const body=
+`**类型：** ${type}\n**昵称：** ${nick}\n**时间：** ${new Date().toLocaleString("zh-CN")}\n\n**内容：**\n${msg}`;
+
+  // 方式一：有 Token 直接创建 Issue（任何人都可提交，无需 GitHub 账号）
+  // 支持细粒度(github_pat_...)与经典(ghp_...)两种 Token
+  if(CONFIG.TOKEN && CONFIG.TOKEN.length > 20){
+    submitBtn.disabled=true; submitBtn.textContent="提交中…";
+    try{
+      const res=await fetch(`https://api.github.com/repos/${CONFIG.OWNER}/${CONFIG.REPO}/issues`,{
+        method:"POST",
+        headers:{
+          "Authorization":`Bearer ${CONFIG.TOKEN}`,
+          "Accept":"application/vnd.github+json",
+          "Content-Type":"application/json",
+          "X-GitHub-Api-Version":"2022-11-28"
+        },
+        body:JSON.stringify({title,body})
+      });
+      if(res.status===201){
+        show("ok","✅ 反馈已提交！我会在仓库 Issues 里看到它，谢谢你的反馈～");
+        form.reset();
+      }else{
+        const j=await res.json().catch(()=>({}));
+        throw new Error(j.message||("HTTP "+res.status));
+      }
+    }catch(err){
+      show("err","提交失败："+esc(err.message)+"。可稍后重试，或手动在仓库开 Issue。");
+    }finally{
+      submitBtn.disabled=false; submitBtn.textContent="提交反馈";
+    }
+    return;
+  }
+
+  // 方式二（无 Token）：打开预填的 Issues 新建页，由提交者登录后点提交
+  if(CONFIG.OWNER && CONFIG.REPO && CONFIG.OWNER!=="YOUR_GITHUB_USERNAME"){
+    const u=`https://github.com/${CONFIG.OWNER}/${CONFIG.REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    show("info","即将打开 GitHub Issues 预填页，登录后点 “Submit new issue” 即可提交。");
+    window.open(u,"_blank");
+  }else{
+    show("err","反馈尚未配置：请在 <code>index.html</code> 顶部填入 OWNER / REPO / TOKEN。");
+  }
+});
+</script>
+</body>
+</html>
