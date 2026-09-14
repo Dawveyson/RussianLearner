@@ -138,7 +138,7 @@
   </section>
 
   <footer>
-    科大er专属的俄语学习器 · 静态托管于 GitHub Pages · 反馈直达仓库 Issues
+    科大er专属的俄语学习器 · GitHub Pages托管ing · Made with Heart💗
   </footer>
 
 </div>
@@ -225,7 +225,7 @@ form.addEventListener("submit",async(e)=>{
         throw new Error(j.message||("HTTP "+res.status));
       }
     }catch(err){
-      show("err","提交失败："+esc(err.message)+"。可稍后重试，或手动在仓库开 Issue。");
+      show("err","提交失败："+esc(err.message)+"。可稍后重试。");
     }finally{
       submitBtn.disabled=false; submitBtn.textContent="提交反馈";
     }
