@@ -103,58 +103,10 @@
       <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/0e7xTLIsc5EDzR_5LQg9I4Rjw#release1.0" download>📱 下载安卓正式 App（APK）(目前最新版本：1.0)</a>
       <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/012Y2xex430OvCj6E9EuqWXFA#beta0.2.1" download>📱 下载安卓内测 App（APK）(目前最新版本：beta-0.2.1)</a>
      <style>
-.iw-mask{position:fixed;inset:0;z-index:9999;background:rgba(17,24,39,.45);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
-.iw-mask.iw-open{opacity:1;visibility:visible}
-.iw-box{width:100%;max-width:420px;max-height:80vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(17,24,39,.22);padding:28px 26px 22px;box-sizing:border-box;transform:translateY(12px) scale(.97);transition:transform .28s cubic-bezier(.22,1,.36,1)}
-.iw-mask.iw-open .iw-box{transform:none}
-.iw-title{margin:0 0 6px;font-size:19px;font-weight:700;color:#1f2937}
-.iw-sub{margin:0 0 16px;font-size:13px;color:#8a93a2}
-.iw-body{font-size:14px;line-height:1.95;color:#48505e;white-space:pre-line}
-.iw-body p{margin:0 0 12px}.iw-body p:last-child{margin-bottom:0}
-.iw-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
-.iw-rem{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#8a93a2;cursor:pointer;user-select:none}
-.iw-rem input{accent-color:#2f6bff;width:14px;height:14px;cursor:pointer}
-.iw-btn{flex:none;border:0;cursor:pointer;padding:10px 26px;border-radius:10px;background:#2f6bff;color:#fff;font-size:14px;font-weight:600;transition:background .18s}
-.iw-btn:hover{background:#1f57e0}
-</style>
 
-<div class="iw-mask" id="iwMask">
-  <div class="iw-box" role="dialog" aria-modal="true">
-    <h2 class="iw-title" id="iwTitle"></h2>
-    <p class="iw-sub" id="iwSub"></p>
-    <div class="iw-body" id="iwBody"></div>
-    <div class="iw-foot">
-      <label class="iw-rem"><input type="checkbox" id="iwChk"> <span id="iwRemTxt"></span></label>
-      <button class="iw-btn" id="iwBtn"></button>
-    </div>
-  </div>
-</div>
-
-<script>
-var IW={
-  autoOpen:true,
-  key:'intro_window_seen',
-  title:'{{INTRO_TITLE}}',
-  sub:'{{INTRO_SUBTITLE}}',
-  body:'{{PARAGRAPH_1}}\n{{PARAGRAPH_2}}\n{{PARAGRAPH_3}}',  // \n 换行，\n\n 分段
-  rem:'{{REMEMBER_TEXT}}',
-  btn:'{{BTN_TEXT}}'
-};
-(function(){
-  var m=document.getElementById('iwMask');
-  document.getElementById('iwTitle').textContent=IW.title;
-  document.getElementById('iwSub').textContent=IW.sub;
-  document.getElementById('iwBody').textContent=IW.body;
-  document.getElementById('iwRemTxt').textContent=IW.rem;
-  document.getElementById('iwBtn').textContent=IW.btn;
-  function close(){m.classList.remove('iw-open');if(document.getElementById('iwChk').checked)localStorage.setItem(IW.key,'1');}
-  document.getElementById('iwBtn').onclick=close;
-  m.onclick=function(e){if(e.target===m)close();};
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
-  if(IW.autoOpen&&!localStorage.getItem(IW.key))setTimeout(function(){m.classList.add('iw-open');},300);
-})();
 </script>
       <span class="dl-note">适用于 Android 手机 · 安装时若提示“未知来源”，请在设置中允许本次安装，记得关闭纯净模式并断网（没在ICP备案）。</span>
+       <span class="dl-note">Update Log:tobe continued......</span>
     </div>
     <div class="dl-row" style="margin-top:12px">
       <a class="btn" href="./russian-cheatsheet.pdf" download style="background:#5b6675">📄 备用：俄语速查表 PDF（暂不可用）</a>
