@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>科大er专属的俄语学习器（Beta）</title>
+<title>科大er专属的俄语学习器</title>
 <style>
   :root{
     --bg:#f6f8fb; --card:#ffffff; --ink:#1f2733; --sub:#5b6675;
@@ -88,7 +88,7 @@
 <div class="wrap">
 
   <header class="hero">
-    <h1>科大er专属的俄语学习器(还在内测阶段)</h1>
+    <h1>科大er专属的俄语学习器</h1>
     <p>给科大学子的极简俄语上手小工具 · 几分钟记住最常用的一句俄语</p>
   </header>
 
@@ -102,26 +102,22 @@
     <div class="dl-row">
       <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/0e7xTLIsc5EDzR_5LQg9I4Rjw#release1.0" download>📱 下载安卓正式 App（APK）(目前最新版本：1.0)</a>
       <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/012Y2xex430OvCj6E9EuqWXFA#beta0.2.1" download>📱 下载安卓内测 App（APK）(目前最新版本：beta-0.2.1)</a>
-     <style>
-
-</script>
-      <span class="dl-note">适用于 Android 手机 · 安装时若提示“未知来源”，请在设置中允许本次安装，记得关闭纯净模式并断网（没在ICP备案）。</span>
-       <span class="dl-note">Update Log:tobe continued......</span>
+      <span class="dl-note">适用于 Android 手机 · 安装时若提示“未知来源”，请在设置中允许本次安装。</span>
     </div>
     <div class="dl-row" style="margin-top:12px">
-      <a class="btn" href="./russian-cheatsheet.pdf" download style="background:#5b6675">📄 备用：俄语速查表 PDF（暂不可用）</a>
+      <a class="btn" href="./russian-cheatsheet.pdf" download style="background:#5b6675">📄 备用：俄语速查表 PDF</a>
     </div>
   </section>
 
   <section>
-    <h2><span class="dot"></span>意见反馈</h2>
+    <h2><span class="dot"></span>意见反馈（功能调试ing暂不可用。。。。。。）</h2>
     <p style="margin:0 0 4px;color:var(--sub);font-size:14px">
-      遇到问题、想加内容、或单纯想夸一句都行。提交后我会看到～
+      遇到问题、想加内容、或单纯想夸一句都行。
     </p>
 
     <form id="fbForm" novalidate>
-      <label for="nick">昵称（同学报一下学号～）</label>
-      <input id="nick" type="text" maxlength="40" placeholder="科大er" />
+      <label for="nick">昵称（选填）</label>
+      <input id="nick" type="text" maxlength="40" placeholder="匿名科大er" />
 
       <label for="type">反馈类型</label>
       <select id="type">
@@ -132,10 +128,10 @@
       </select>
 
       <label for="msg">反馈内容 *</label>
-      <textarea id="msg" placeholder="比如：能不能加上xxx俄语相关的内容？" required></textarea>
+      <textarea id="msg" placeholder="比如：能不能加一点点餐常用的俄语？" required></textarea>
 
       <div class="submit-row">
-        <button class="btn ghost" type="submit" id="submitBtn">提交反馈（功能还在调试中可能失效）</button>
+        <button class="btn ghost" type="submit" id="submitBtn">提交反馈</button>
       </div>
 
       <div class="status" id="status"></div>
@@ -143,7 +139,7 @@
   </section>
 
   <footer>
-    科大er专属的俄语学习器 · GitHub Pages托管ing · Made with Heart💗
+    科大er专属的俄语学习器 · 托管于 GitHub Pages · Made With Heart💗
   </footer>
 
 </div>
@@ -157,9 +153,9 @@
    详细说明见仓库 README.md
    ============================================================ */
 const CONFIG = {
-  OWNER: "Davey.Wang",
-  REPO:  "RussianLearner",
-  TOKEN: "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"   // 例：github_pat_xxxxxxxxxxxxxxxx
+  OWNER: "YOUR_GITHUB_USERNAME",
+  REPO:  "YOUR_REPO_NAME",
+  TOKEN: ""   // 例：github_pat_xxxxxxxxxxxxxxxx
 };
 
 /* 极简俄语短语表（俄语 / 读音 / 中文） */
@@ -230,7 +226,7 @@ form.addEventListener("submit",async(e)=>{
         throw new Error(j.message||("HTTP "+res.status));
       }
     }catch(err){
-      show("err","提交失败："+esc(err.message)+"。可稍后重试。");
+      show("err","提交失败："+esc(err.message)+"。可稍后重试，或手动在仓库开 Issue。");
     }finally{
       submitBtn.disabled=false; submitBtn.textContent="提交反馈";
     }
