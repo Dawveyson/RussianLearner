@@ -101,12 +101,14 @@
   <section>
     <h2><span class="dot"></span>下载安卓 App</h2>
     <div class="dl-row">
-      <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/0e7xTLIsc5EDzR_5LQg9I4Rjw#release1.0" download>📱 下载安卓正式 App（APK）(目前最新版本：1.0)</a>
+      <a class="btn" id="dlBtn" href="./RuLearn-release.apk" download>📱 下载安卓正式 App（APK）(Github下载，可能较慢)</a>
+      <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/0926MetSROq4C7ijGPWKYfdQg" download>📱 下载安卓正式 App（APK）(iCloud下载-推荐-速度较快)</a>
       <span class="dl-note">适用于 Android 手机 · 安装时若提示“未知来源”，请在设置中允许本次安装，并且确保在设置中关闭了纯净模式</span>
       <span class="re-note">目前应用已经开始逐步完善，于是取消beta版本，并提供资源包下载（大学通用俄语1-第二版）</span>
     </div>
     <div class="dl-row" style="margin-top:12px">
-      <a class="btn" href="./index.html" download style="background:#5b6675">📄 第二版大学通用俄语1-课本资源包(下载不了就是没上传好)</a>
+      <a class="btn" href="https://www.icloud.com/iclouddrive/0ebuZy2P0RK6Kz_LykRDO-V4A" download style="background:#5b6675">📄 第二版大学通用俄语1-课本资源包</a>
+      <a class="btn" href="https://www.icloud.com/iclouddrive/0ce3sq7wwK5fkqi6M2i6wMxlA" download style="background:#5b6675">📄 大学通用俄语-单词练习包</a>
     </div>
   </section>
 
@@ -129,7 +131,7 @@
       </select>
 
       <label for="msg">反馈内容 *</label>
-      <textarea id="msg" placeholder="比如：能不能加一点点餐常用的俄语？" required></textarea>
+      <textarea id="msg" placeholder="比如：能不能拓展一些词书？" required></textarea>
 
       <div class="submit-row">
         <button class="btn ghost" type="submit" id="submitBtn">提交反馈</button>
@@ -140,7 +142,7 @@
   </section>
 
   <footer>
-    科大er专属的俄语学习器 · 托管于 GitHub Pages · Made With Heart💗
+    科大er专属的俄语学习器 · Made With Heart💗 · 词书添加建议可以直接微信反馈或者发送到w2273910392@outlook.com
   </footer>
 
 </div>
@@ -240,7 +242,7 @@ form.addEventListener("submit",async(e)=>{
     show("info","即将打开 GitHub Issues 预填页，登录后点 “Submit new issue” 即可提交。");
     window.open(u,"_blank");
   }else{
-    show("err","反馈尚未配置：请在 <code>index.html</code> 顶部填入 OWNER / REPO / TOKEN。");
+    show("err","后端尚未配置：API没有配备❌");
   }
 });
 </script>
