@@ -1,0 +1,41 @@
+# Built application files
+*.apk
+*.aab
+*.ap_
+*.aar
+
+# Keystore / signing (NEVER commit)
+*.jks
+*.keystore
+*.key
+
+# Local properties (SDK path, etc.)
+local.properties
+
+# Gradle / build
+.gradle/
+build/
+/*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# IDE
+.idea/
+*.iml
+*.iml.bak
+.DS_Store
+
+# Released artifacts assembled locally (keep source only)
+app/release/
+
+# Generated distributable / cache artifacts (regenerate via tools/ scripts, do not commit)
+tools/textbook.zip
+tools/ru-audio-pack.zip
+tools/audio_src/
+tools/asr_cache.json
+*.zip
+
+# Stray debug APK at repo root
+RuLearnApp-*-debug.apk
+

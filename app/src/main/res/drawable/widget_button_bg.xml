@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 「换一个」按钮的胶囊底 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/widget_accent" />
+    <corners android:radius="17dp" />
+    <padding
+        android:bottom="0dp"
+        android:left="12dp"
+        android:right="12dp"
+        android:top="0dp" />
+</shape>

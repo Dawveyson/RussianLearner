@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="study_widget_label">今日学习</string>
+    <string name="study_widget_desc">显示今天的学习进度与到期的复习量</string>
+    <string name="daily_word_widget_label">每日一词</string>
+    <string name="daily_word_widget_desc">桌面上的一个俄语单词或一句俄语</string>
+</resources>

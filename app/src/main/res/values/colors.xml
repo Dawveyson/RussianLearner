@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 桌面小组件用色，和 App 内 Material 3 品牌的 surface / primary 保持一致 -->
+    <color name="widget_bg">#FFFFFFFF</color>
+    <color name="widget_text">#FF1A1C1E</color>
+    <color name="widget_sub">#FF42474E</color>
+    <color name="widget_accent">#FF00639B</color>
+</resources>

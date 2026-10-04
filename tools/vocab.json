@@ -1,0 +1,752 @@
+[
+  {
+    "ru": "это",
+    "zh": "这些",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%8D%D1%82%D0%BE&le=ru"
+  },
+  {
+    "ru": "что",
+    "zh": "什么",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%87%D1%82%D0%BE&le=ru"
+  },
+  {
+    "ru": "мама",
+    "zh": "妈妈",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%B0%D0%BC%D0%B0&le=ru"
+  },
+  {
+    "ru": "она",
+    "zh": "她",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BE%D0%BD%D0%B0&le=ru"
+  },
+  {
+    "ru": "там",
+    "zh": "那里",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%82%D0%B0%D0%BC&le=ru"
+  },
+  {
+    "ru": "антон",
+    "zh": "安东尼奥",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B0%D0%BD%D1%82%D0%BE%D0%BD&le=ru"
+  },
+  {
+    "ru": "папа",
+    "zh": "爸爸",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%B0%D0%BF%D0%B0&le=ru"
+  },
+  {
+    "ru": "упражнение",
+    "zh": "练习",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%83%D0%BF%D1%80%D0%B0%D0%B6%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5&le=ru"
+  },
+  {
+    "ru": "они",
+    "zh": "他",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BE%D0%BD%D0%B8&le=ru"
+  },
+  {
+    "ru": "новые",
+    "zh": "新",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BD%D0%BE%D0%B2%D1%8B%D0%B5&le=ru"
+  },
+  {
+    "ru": "слова",
+    "zh": "词",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%BB%D0%BE%D0%B2%D0%B0&le=ru"
+  },
+  {
+    "ru": "чем",
+    "zh": "比",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%87%D0%B5%D0%BC&le=ru"
+  },
+  {
+    "ru": "кто",
+    "zh": "谁",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D1%82%D0%BE&le=ru"
+  },
+  {
+    "ru": "есть",
+    "zh": "有",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B5%D1%81%D1%82%D1%8C&le=ru"
+  },
+  {
+    "ru": "работает",
+    "zh": "工作",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82&le=ru"
+  },
+  {
+    "ru": "сестра",
+    "zh": "妹妹",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%B5%D1%81%D1%82%D1%80%D0%B0&le=ru"
+  },
+  {
+    "ru": "сколько",
+    "zh": "多少钱",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%BA%D0%BE&le=ru"
+  },
+  {
+    "ru": "тут",
+    "zh": "这里",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%82%D1%83%D1%82&le=ru"
+  },
+  {
+    "ru": "дома",
+    "zh": "房子",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%BE%D0%BC%D0%B0&le=ru"
+  },
+  {
+    "ru": "мой",
+    "zh": "我的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%BE%D0%B9&le=ru"
+  },
+  {
+    "ru": "газета",
+    "zh": "报纸",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B3%D0%B0%D0%B7%D0%B5%D1%82%D0%B0&le=ru"
+  },
+  {
+    "ru": "моя",
+    "zh": "我的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%BE%D1%8F&le=ru"
+  },
+  {
+    "ru": "упражнения",
+    "zh": "练习",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%83%D0%BF%D1%80%D0%B0%D0%B6%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F&le=ru"
+  },
+  {
+    "ru": "учится",
+    "zh": "学习",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%83%D1%87%D0%B8%D1%82%D1%81%D1%8F&le=ru"
+  },
+  {
+    "ru": "зовут",
+    "zh": "叫",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%BE%D0%B2%D1%83%D1%82&le=ru"
+  },
+  {
+    "ru": "как",
+    "zh": "如何",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%B0%D0%BA&le=ru"
+  },
+  {
+    "ru": "лет",
+    "zh": "夏天",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BB%D0%B5%D1%82&le=ru"
+  },
+  {
+    "ru": "дедушка",
+    "zh": "爷爷",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%B5%D0%B4%D1%83%D1%88%D0%BA%D0%B0&le=ru"
+  },
+  {
+    "ru": "здесь",
+    "zh": "在这里",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%B4%D0%B5%D1%81%D1%8C&le=ru"
+  },
+  {
+    "ru": "теперь",
+    "zh": "现在",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%82%D0%B5%D0%BF%D0%B5%D1%80%D1%8C&le=ru"
+  },
+  {
+    "ru": "университете",
+    "zh": "大学",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%83%D0%BD%D0%B8%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%82%D0%B5%D1%82%D0%B5&le=ru"
+  },
+  {
+    "ru": "или",
+    "zh": "或",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B8%D0%BB%D0%B8&le=ru"
+  },
+  {
+    "ru": "наша",
+    "zh": "我们的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BD%D0%B0%D1%88%D0%B0&le=ru"
+  },
+  {
+    "ru": "сын",
+    "zh": "儿子",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D1%8B%D0%BD&le=ru"
+  },
+  {
+    "ru": "отец",
+    "zh": "父亲",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BE%D1%82%D0%B5%D1%86&le=ru"
+  },
+  {
+    "ru": "сегодня",
+    "zh": "今天",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%B5%D0%B3%D0%BE%D0%B4%D0%BD%D1%8F&le=ru"
+  },
+  {
+    "ru": "семье",
+    "zh": "家人",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%B5%D0%BC%D1%8C%D0%B5&le=ru"
+  },
+  {
+    "ru": "семья",
+    "zh": "家人",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%B5%D0%BC%D1%8C%D1%8F&le=ru"
+  },
+  {
+    "ru": "стол",
+    "zh": "桌子",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D1%82%D0%BE%D0%BB&le=ru"
+  },
+  {
+    "ru": "текст",
+    "zh": "文本",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%82%D0%B5%D0%BA%D1%81%D1%82&le=ru"
+  },
+  {
+    "ru": "брат",
+    "zh": "哥哥",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B1%D1%80%D0%B0%D1%82&le=ru"
+  },
+  {
+    "ru": "два",
+    "zh": "二",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%B2%D0%B0&le=ru"
+  },
+  {
+    "ru": "его",
+    "zh": "他",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B5%D0%B3%D0%BE&le=ru"
+  },
+  {
+    "ru": "какой",
+    "zh": "如何",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%B0%D0%BA%D0%BE%D0%B9&le=ru"
+  },
+  {
+    "ru": "квартира",
+    "zh": "公寓",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%B2%D0%B0%D1%80%D1%82%D0%B8%D1%80%D0%B0&le=ru"
+  },
+  {
+    "ru": "очень",
+    "zh": "非常",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BE%D1%87%D0%B5%D0%BD%D1%8C&le=ru"
+  },
+  {
+    "ru": "дочь",
+    "zh": "女儿",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%BE%D1%87%D1%8C&le=ru"
+  },
+  {
+    "ru": "здравствуйте",
+    "zh": "你好",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5&le=ru"
+  },
+  {
+    "ru": "комната",
+    "zh": "房间",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D0%B0&le=ru"
+  },
+  {
+    "ru": "кому",
+    "zh": "谁",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%BE%D0%BC%D1%83&le=ru"
+  },
+  {
+    "ru": "нашей",
+    "zh": "我们的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BD%D0%B0%D1%88%D0%B5%D0%B9&le=ru"
+  },
+  {
+    "ru": "преподаватель",
+    "zh": "教师",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C&le=ru"
+  },
+  {
+    "ru": "аудирование",
+    "zh": "听力",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B0%D1%83%D0%B4%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&le=ru"
+  },
+  {
+    "ru": "вас",
+    "zh": "你们",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D0%B0%D1%81&le=ru"
+  },
+  {
+    "ru": "все",
+    "zh": "所有",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D1%81%D0%B5&le=ru"
+  },
+  {
+    "ru": "делает",
+    "zh": "干什么",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%B5%D0%BB%D0%B0%D0%B5%D1%82&le=ru"
+  },
+  {
+    "ru": "какие",
+    "zh": "如何",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5&le=ru"
+  },
+  {
+    "ru": "наш",
+    "zh": "我们的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BD%D0%B0%D1%88&le=ru"
+  },
+  {
+    "ru": "работу",
+    "zh": "工作",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83&le=ru"
+  },
+  {
+    "ru": "речевой",
+    "zh": "言语",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%B5%D1%87%D0%B5%D0%B2%D0%BE%D0%B9&le=ru"
+  },
+  {
+    "ru": "речевые",
+    "zh": "言语",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%B5%D1%87%D0%B5%D0%B2%D1%8B%D0%B5&le=ru"
+  },
+  {
+    "ru": "сейчас",
+    "zh": "现在",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%B5%D0%B9%D1%87%D0%B0%D1%81&le=ru"
+  },
+  {
+    "ru": "этикет",
+    "zh": "礼仪",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%8D%D1%82%D0%B8%D0%BA%D0%B5%D1%82&le=ru"
+  },
+  {
+    "ru": "вечером",
+    "zh": "晚上",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D0%BE%D0%BC&le=ru"
+  },
+  {
+    "ru": "книга",
+    "zh": "书",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%BD%D0%B8%D0%B3%D0%B0&le=ru"
+  },
+  {
+    "ru": "пожалуйста",
+    "zh": "拜托",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0&le=ru"
+  },
+  {
+    "ru": "после",
+    "zh": "之后",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%BE%D1%81%D0%BB%D0%B5&le=ru"
+  },
+  {
+    "ru": "поэт",
+    "zh": "所以",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%BE%D1%8D%D1%82&le=ru"
+  },
+  {
+    "ru": "восемь",
+    "zh": "八",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D0%BE%D1%81%D0%B5%D0%BC%D1%8C&le=ru"
+  },
+  {
+    "ru": "вот",
+    "zh": "这就是",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D0%BE%D1%82&le=ru"
+  },
+  {
+    "ru": "жена",
+    "zh": "妻子",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B6%D0%B5%D0%BD%D0%B0&le=ru"
+  },
+  {
+    "ru": "заводе",
+    "zh": "工厂",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%B0%D0%B2%D0%BE%D0%B4%D0%B5&le=ru"
+  },
+  {
+    "ru": "здравствуй",
+    "zh": "你好",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9&le=ru"
+  },
+  {
+    "ru": "младшая",
+    "zh": "以下",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%BB%D0%B0%D0%B4%D1%88%D0%B0%D1%8F&le=ru"
+  },
+  {
+    "ru": "пальто",
+    "zh": "外套",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%B0%D0%BB%D1%8C%D1%82%D0%BE&le=ru"
+  },
+  {
+    "ru": "старшая",
+    "zh": "以上",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D1%82%D0%B0%D1%80%D1%88%D0%B0%D1%8F&le=ru"
+  },
+  {
+    "ru": "студент",
+    "zh": "学生",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D1%82%D1%83%D0%B4%D0%B5%D0%BD%D1%82&le=ru"
+  },
+  {
+    "ru": "студенты",
+    "zh": "学生",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D1%82%D1%83%D0%B4%D0%B5%D0%BD%D1%82%D1%8B&le=ru"
+  },
+  {
+    "ru": "язык",
+    "zh": "语言",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%8F%D0%B7%D1%8B%D0%BA&le=ru"
+  },
+  {
+    "ru": "вашей",
+    "zh": "你们",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D0%B0%D1%88%D0%B5%D0%B9&le=ru"
+  },
+  {
+    "ru": "двадцать",
+    "zh": "20",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%B2%D0%B0%D0%B4%D1%86%D0%B0%D1%82%D1%8C&le=ru"
+  },
+  {
+    "ru": "делать",
+    "zh": "干什么",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C&le=ru"
+  },
+  {
+    "ru": "кого",
+    "zh": "谁",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%BE%D0%B3%D0%BE&le=ru"
+  },
+  {
+    "ru": "один",
+    "zh": "一个",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BE%D0%B4%D0%B8%D0%BD&le=ru"
+  },
+  {
+    "ru": "родители",
+    "zh": "父母",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%BE%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D0%B8&le=ru"
+  },
+  {
+    "ru": "семь",
+    "zh": "家人",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%B5%D0%BC%D1%8C&le=ru"
+  },
+  {
+    "ru": "спасибо",
+    "zh": "谢谢",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%BF%D0%B0%D1%81%D0%B8%D0%B1%D0%BE&le=ru"
+  },
+  {
+    "ru": "спорта",
+    "zh": "运动",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B0&le=ru"
+  },
+  {
+    "ru": "библиотеке",
+    "zh": "图书馆",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA%D0%B5&le=ru"
+  },
+  {
+    "ru": "всего",
+    "zh": "只有",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D1%81%D0%B5%D0%B3%D0%BE&le=ru"
+  },
+  {
+    "ru": "дети",
+    "zh": "孩子",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%B5%D1%82%D0%B8&le=ru"
+  },
+  {
+    "ru": "добрый",
+    "zh": "善良",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B4%D0%BE%D0%B1%D1%80%D1%8B%D0%B9&le=ru"
+  },
+  {
+    "ru": "жизни",
+    "zh": "生活",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B6%D0%B8%D0%B7%D0%BD%D0%B8&le=ru"
+  },
+  {
+    "ru": "журнал",
+    "zh": "杂志",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B6%D1%83%D1%80%D0%BD%D0%B0%D0%BB&le=ru"
+  },
+  {
+    "ru": "занимаешься",
+    "zh": "做",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D0%B5%D1%88%D1%8C%D1%81%D1%8F&le=ru"
+  },
+  {
+    "ru": "занимаюсь",
+    "zh": "做",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%8E%D1%81%D1%8C&le=ru"
+  },
+  {
+    "ru": "интернете",
+    "zh": "互联网",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%BD%D0%B5%D1%82%D0%B5&le=ru"
+  },
+  {
+    "ru": "куда",
+    "zh": "哪里",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D1%83%D0%B4%D0%B0&le=ru"
+  },
+  {
+    "ru": "мать",
+    "zh": "母亲",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%B0%D1%82%D1%8C&le=ru"
+  },
+  {
+    "ru": "меня",
+    "zh": "我",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%B5%D0%BD%D1%8F&le=ru"
+  },
+  {
+    "ru": "моему",
+    "zh": "我的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%BE%D0%B5%D0%BC%D1%83&le=ru"
+  },
+  {
+    "ru": "николай",
+    "zh": "尼古拉",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BD%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D0%B9&le=ru"
+  },
+  {
+    "ru": "новый",
+    "zh": "新",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BD%D0%BE%D0%B2%D1%8B%D0%B9&le=ru"
+  },
+  {
+    "ru": "платье",
+    "zh": "裙子",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%BB%D0%B0%D1%82%D1%8C%D0%B5&le=ru"
+  },
+  {
+    "ru": "профессор",
+    "zh": "教授",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%BE%D1%80&le=ru"
+  },
+  {
+    "ru": "рассказ",
+    "zh": "故事",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%B0%D1%81%D1%81%D0%BA%D0%B0%D0%B7&le=ru"
+  },
+  {
+    "ru": "старший",
+    "zh": "以上",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D1%82%D0%B0%D1%80%D1%88%D0%B8%D0%B9&le=ru"
+  },
+  {
+    "ru": "только",
+    "zh": "只有",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%82%D0%BE%D0%BB%D1%8C%D0%BA%D0%BE&le=ru"
+  },
+  {
+    "ru": "уже",
+    "zh": "已经",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%83%D0%B6%D0%B5&le=ru"
+  },
+  {
+    "ru": "улице",
+    "zh": "街道",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%83%D0%BB%D0%B8%D1%86%D0%B5&le=ru"
+  },
+  {
+    "ru": "хорошо",
+    "zh": "好",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%85%D0%BE%D1%80%D0%BE%D1%88%D0%BE&le=ru"
+  },
+  {
+    "ru": "цветы",
+    "zh": "颜色",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%86%D0%B2%D0%B5%D1%82%D1%8B&le=ru"
+  },
+  {
+    "ru": "читать",
+    "zh": "读",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%87%D0%B8%D1%82%D0%B0%D1%82%D1%8C&le=ru"
+  },
+  {
+    "ru": "школе",
+    "zh": "学校",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%88%D0%BA%D0%BE%D0%BB%D0%B5&le=ru"
+  },
+  {
+    "ru": "аудитории",
+    "zh": "观众",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B0%D1%83%D0%B4%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D0%B8&le=ru"
+  },
+  {
+    "ru": "белье",
+    "zh": "白",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B1%D0%B5%D0%BB%D1%8C%D0%B5&le=ru"
+  },
+  {
+    "ru": "библиотека",
+    "zh": "图书馆",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA%D0%B0&le=ru"
+  },
+  {
+    "ru": "воскресенье",
+    "zh": "星期天",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D0%BE%D1%81%D0%BA%D1%80%D0%B5%D1%81%D0%B5%D0%BD%D1%8C%D0%B5&le=ru"
+  },
+  {
+    "ru": "врач",
+    "zh": "医生",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D1%80%D0%B0%D1%87&le=ru"
+  },
+  {
+    "ru": "время",
+    "zh": "时间",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D1%80%D0%B5%D0%BC%D1%8F&le=ru"
+  },
+  {
+    "ru": "вчера",
+    "zh": "昨天",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B2%D1%87%D0%B5%D1%80%D0%B0&le=ru"
+  },
+  {
+    "ru": "говорят",
+    "zh": "说话",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B3%D0%BE%D0%B2%D0%BE%D1%80%D1%8F%D1%82&le=ru"
+  },
+  {
+    "ru": "занимаются",
+    "zh": "做",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B7%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%8E%D1%82%D1%81%D1%8F&le=ru"
+  },
+  {
+    "ru": "идёт",
+    "zh": "适合",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B8%D0%B4%D1%91%D1%82&le=ru"
+  },
+  {
+    "ru": "каждое",
+    "zh": "每",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%B0%D0%B6%D0%B4%D0%BE%D0%B5&le=ru"
+  },
+  {
+    "ru": "какими",
+    "zh": "如何",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%B0%D0%BA%D0%B8%D0%BC%D0%B8&le=ru"
+  },
+  {
+    "ru": "китайский",
+    "zh": "中国",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B8%D0%B9&le=ru"
+  },
+  {
+    "ru": "ком",
+    "zh": "谁",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BA%D0%BE%D0%BC&le=ru"
+  },
+  {
+    "ru": "липин",
+    "zh": "睡梦",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BB%D0%B8%D0%BF%D0%B8%D0%BD&le=ru"
+  },
+  {
+    "ru": "магазине",
+    "zh": "商店",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%B0%D0%B3%D0%B0%D0%B7%D0%B8%D0%BD%D0%B5&le=ru"
+  },
+  {
+    "ru": "машины",
+    "zh": "车",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%B0%D1%88%D0%B8%D0%BD%D1%8B&le=ru"
+  },
+  {
+    "ru": "много",
+    "zh": "很多",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE&le=ru"
+  },
+  {
+    "ru": "моей",
+    "zh": "我的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BC%D0%BE%D0%B5%D0%B9&le=ru"
+  },
+  {
+    "ru": "ней",
+    "zh": "不",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BD%D0%B5%D0%B9&le=ru"
+  },
+  {
+    "ru": "пишет",
+    "zh": "写",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%B8%D1%88%D0%B5%D1%82&le=ru"
+  },
+  {
+    "ru": "пол",
+    "zh": "保罗",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D0%BE%D0%BB&le=ru"
+  },
+  {
+    "ru": "пятнадцать",
+    "zh": "15",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%BF%D1%8F%D1%82%D0%BD%D0%B0%D0%B4%D1%86%D0%B0%D1%82%D1%8C&le=ru"
+  },
+  {
+    "ru": "работают",
+    "zh": "工作",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D1%8E%D1%82&le=ru"
+  },
+  {
+    "ru": "рано",
+    "zh": "伤口",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%80%D0%B0%D0%BD%D0%BE&le=ru"
+  },
+  {
+    "ru": "своих",
+    "zh": "的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%81%D0%B2%D0%BE%D0%B8%D1%85&le=ru"
+  },
+  {
+    "ru": "твоя",
+    "zh": "你的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%82%D0%B2%D0%BE%D1%8F&le=ru"
+  },
+  {
+    "ru": "университет",
+    "zh": "大学",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%83%D0%BD%D0%B8%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%82%D0%B5%D1%82&le=ru"
+  },
+  {
+    "ru": "физик",
+    "zh": "物理学家",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%84%D0%B8%D0%B7%D0%B8%D0%BA&le=ru"
+  },
+  {
+    "ru": "фильм",
+    "zh": "电影",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%84%D0%B8%D0%BB%D1%8C%D0%BC&le=ru"
+  },
+  {
+    "ru": "чей",
+    "zh": "谁的",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D1%87%D0%B5%D0%B9&le=ru"
+  },
+  {
+    "ru": "аспирантка",
+    "zh": "研究生",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B0%D1%81%D0%BF%D0%B8%D1%80%D0%B0%D0%BD%D1%82%D0%BA%D0%B0&le=ru"
+  },
+  {
+    "ru": "ассистент",
+    "zh": "助理",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B0%D1%81%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BD%D1%82&le=ru"
+  },
+  {
+    "ru": "банан",
+    "zh": "香蕉",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B1%D0%B0%D0%BD%D0%B0%D0%BD&le=ru"
+  },
+  {
+    "ru": "баскетбол",
+    "zh": "篮球",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B1%D0%B0%D1%81%D0%BA%D0%B5%D1%82%D0%B1%D0%BE%D0%BB&le=ru"
+  },
+  {
+    "ru": "больнице",
+    "zh": "医院",
+    "audio": "https://dict.youdao.com/dictvoice?audio=%D0%B1%D0%BE%D0%BB%D1%8C%D0%BD%D0%B8%D1%86%D0%B5&le=ru"
+  }
+]
