@@ -48,3 +48,25 @@ const CONFIG = {
 - 改速查表：改 `russian-cheatsheet.html` 后，用浏览器“打印 → 另存为 PDF”重新生成 `russian-cheatsheet.pdf`。
 - 改下载 App：把你的安卓安装包命名为 `app-release.apk` 放到仓库根目录（或改 `index.html` 里 `id="dlBtn"` 的 `href` 指向你的 apk 文件名）。
 - 改竖屏/横屏样式：编辑 `index.html` 里 `@media (orientation: ...)` 那段。
+
+## 项目结构
+
+本仓库除了上面这套**网页分发页**（`index.html` / `russian-cheatsheet.html`），还包含 **RuLearn 安卓 App** 的源码：
+
+- `app/` —— 安卓端（Compose / AndroidX），可构建 APK。
+- `shared/` —— 跨平台共享代码（Kotlin/JVM）。
+- `desktop/` —— 桌面端（Compose for Desktop）。
+- `tools/` —— 词库与打包脚本（`vocab.json` 为词库，约 2000 条）。
+- `LICENSE` / `NOTICE` —— 开源许可证与版权声明。
+
+App 内「设置 → 开源许可」页面列出了所有第三方开源组件及其许可证。
+
+## 开源许可证
+
+本项目以 **Apache License 2.0** 发布。
+
+- 完整文本见 [`LICENSE`](LICENSE)。
+- 版权声明见 [`NOTICE`](NOTICE)。
+- 第三方依赖（Kotlin、Compose Multiplatform、kotlinx 系列、AndroidX 等）均为 Apache 2.0，详情见 App 内「开源许可」页或 [`app/src/main/assets/THIRD_PARTY_LICENSES.txt`](app/src/main/assets/THIRD_PARTY_LICENSES.txt)。
+
+> 注：词库发音音频通过有道 `dictvoice` 接口运行时获取，其音频内容的授权独立于本代码许可证；若将其打包进分发物，需另行处理内容授权。

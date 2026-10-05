@@ -31,6 +31,7 @@ import com.example.rulearn.ui.common.NavItem
 import com.example.rulearn.ui.home.HomeScreen
 import com.example.rulearn.ui.lesson.LessonScreen
 import com.example.rulearn.ui.me.ImportScreen
+import com.example.rulearn.ui.me.LicensesScreen
 import com.example.rulearn.ui.me.MeScreen
 import com.example.rulearn.ui.me.SettingsScreen
 import com.example.rulearn.ui.words.QuizScreen
@@ -50,6 +51,7 @@ object Route {
     const val HANDWRITING = "handwriting"
     const val IMPORT = "import"
     const val SETTINGS = "settings"
+    const val LICENSES = "licenses"
 
     val TOP_LEVEL = setOf(HOME, WORDS, ALPHABET, ME)
 }
@@ -113,6 +115,7 @@ fun RootScreen() {
             composable(Route.HANDWRITING) { HandwritingScreen(nav) }
             composable(Route.IMPORT) { ImportScreen(nav) }
             composable(Route.SETTINGS) { SettingsScreen(nav) }
+            composable(Route.LICENSES) { LicensesScreen(nav) }
         }
     }
 }

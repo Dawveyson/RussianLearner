@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.rulearn.core.Prefs
 import com.example.rulearn.data.AppRepository
+import com.example.rulearn.ui.Route
 import com.example.rulearn.ui.theme.GlassCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -166,6 +167,16 @@ fun SettingsScreen(nav: NavController) {
                         onClick = { confirmReset = true },
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("清除全部掌握度记录") }
+                }
+            }
+
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("关于", fontWeight = FontWeight.Bold)
+                    TextButton(
+                        onClick = { nav.navigate(Route.LICENSES) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("开源许可 / Open Source Licenses") }
                 }
             }
 
