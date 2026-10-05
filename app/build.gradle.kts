@@ -11,17 +11,18 @@ android {
         applicationId = "com.example.rulearn"
         minSdk = 24
         targetSdk = 37
-        versionCode = 8
-        versionName = "1.0"
+        versionCode = 9
+        versionName = "1.0.0"
     }
 
     signingConfigs {
         create("release") {
             // 签名信息从环境变量或 ~/.gradle/gradle.properties 读取，切勿把密码写进仓库。
-            val ks = System.getenv("RU_KEYSTORE") ?: project.findProperty("RU_KEYSTORE") as? String
-            val pw = System.getenv("RU_KEYSTORE_PASSWORD") ?: project.findProperty("RU_KEYSTORE_PASSWORD") as? String
-            val alias = System.getenv("RU_KEY_ALIAS") ?: project.findProperty("RU_KEY_ALIAS") as? String
-            val kpw = System.getenv("RU_KEY_PASSWORD") ?: project.findProperty("RU_KEY_PASSWORD") as? String
+            // 空字符串也视为“未配置”，回退到 debug 签名（便于 CI / 开源协作者直接构建）。
+            val ks = (System.getenv("RU_KEYSTORE") ?: project.findProperty("RU_KEYSTORE") as? String)?.takeIf { it.isNotBlank() }
+            val pw = (System.getenv("RU_KEYSTORE_PASSWORD") ?: project.findProperty("RU_KEYSTORE_PASSWORD") as? String)?.takeIf { it.isNotBlank() }
+            val alias = (System.getenv("RU_KEY_ALIAS") ?: project.findProperty("RU_KEY_ALIAS") as? String)?.takeIf { it.isNotBlank() }
+            val kpw = (System.getenv("RU_KEY_PASSWORD") ?: project.findProperty("RU_KEY_PASSWORD") as? String)?.takeIf { it.isNotBlank() }
             if (ks != null && pw != null && alias != null && kpw != null) {
                 storeFile = file(ks)
                 storePassword = pw

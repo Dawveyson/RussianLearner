@@ -26,7 +26,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -36,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Slider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -76,6 +77,19 @@ fun MeScreen(nav: NavController) {
     var lessonChoice by remember { mutableIntStateOf(0) }
     var random by remember { mutableStateOf(false) }
     var showLyrics by remember { mutableStateOf(false) }
+
+    // 切换课程时，若随身听正在播放，先弹确认框再切歌（避免要先停止才能播其他课）。
+    var pendingLesson by remember { mutableIntStateOf(-1) }
+    var showSwitchDialog by remember { mutableStateOf(false) }
+
+    fun chooseLesson(value: Int) {
+        if (PocketState.running && value != lessonChoice) {
+            pendingLesson = value
+            showSwitchDialog = true
+        } else {
+            lessonChoice = value
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("个人") }) }
@@ -132,19 +146,6 @@ fun MeScreen(nav: NavController) {
                             ) { Icon(Icons.Filled.SkipPrevious, contentDescription = "上一段") }
 
                             IconButton(
-                                onClick = {
-                                    if (PocketState.isPlaying) PocketService.send(ctx, PocketService.ACTION_PAUSE)
-                                    else PocketService.send(ctx, PocketService.ACTION_PLAY)
-                                },
-                                enabled = PocketState.running
-                            ) {
-                                Icon(
-                                    if (PocketState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                                    contentDescription = "播放/暂停"
-                                )
-                            }
-
-                            IconButton(
                                 onClick = { PocketService.send(ctx, PocketService.ACTION_NEXT) },
                                 enabled = PocketState.running
                             ) { Icon(Icons.Filled.SkipNext, contentDescription = "下一段") }
@@ -180,13 +181,28 @@ fun MeScreen(nav: NavController) {
                         ) {
                             Button(
                                 onClick = {
-                                    PocketService.start(ctx, lessonChoice, random)
+                                    when {
+                                        !PocketState.running -> PocketService.start(ctx, lessonChoice, random)
+                                        PocketState.isPlaying -> PocketService.send(ctx, PocketService.ACTION_PAUSE)
+                                        else -> PocketService.send(ctx, PocketService.ACTION_PLAY)
+                                    }
                                 },
                                 enabled = lessons.isNotEmpty(),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Icon(Icons.Filled.Headphones, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
-                                Text(if (PocketState.running) "重新开始" else "开始播放")
+                                val mainIcon = when {
+                                    !PocketState.running -> Icons.Filled.Headphones
+                                    PocketState.isPlaying -> Icons.Filled.Pause
+                                    else -> Icons.Filled.PlayArrow
+                                }
+                                Icon(mainIcon, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
+                                Text(
+                                    when {
+                                        !PocketState.running -> "开始播放"
+                                        PocketState.isPlaying -> "暂停"
+                                        else -> "继续"
+                                    }
+                                )
                             }
                             OutlinedButton(
                                 onClick = { PocketService.send(ctx, PocketService.ACTION_STOP) },
@@ -226,9 +242,9 @@ fun MeScreen(nav: NavController) {
                                     .horizontalScroll(androidx.compose.foundation.rememberScrollState()),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                LessonChip(0, "全部", lessonChoice == 0) { lessonChoice = 0 }
+                                LessonChip(0, "全部", lessonChoice == 0) { chooseLesson(0) }
                                 lessons.forEach { l ->
-                                    LessonChip(l.n, "урок ${l.n}", lessonChoice == l.n) { lessonChoice = l.n }
+                                    LessonChip(l.n, "урок ${l.n}", lessonChoice == l.n) { chooseLesson(l.n) }
                                 }
                             }
                         }
@@ -237,7 +253,7 @@ fun MeScreen(nav: NavController) {
                             horizontalArrangement = Arrangement.Center
                         ) {
                             OutlinedButton(onClick = { showLyrics = !showLyrics }) {
-                                Icon(Icons.Filled.List, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
+                                Icon(Icons.AutoMirrored.Filled.List, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
                                 Text(if (showLyrics) "隐藏歌词" else "歌词")
                             }
                         }
@@ -341,6 +357,28 @@ fun MeScreen(nav: NavController) {
                     }
                 }
             }
+        }
+        if (showSwitchDialog) {
+            AlertDialog(
+                onDismissRequest = { showSwitchDialog = false },
+                title = { Text("切换课程") },
+                text = {
+                    Text(
+                        "确定要从当前播放切换到「${if (pendingLesson == 0) "全部课程" else "第 $pendingLesson 课"}」吗？" +
+                            "切换后将从头开始播放该课程。"
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        lessonChoice = pendingLesson
+                        showSwitchDialog = false
+                        PocketService.start(ctx, pendingLesson, random)
+                    }) { Text("切换") }
+                },
+                dismissButton = {
+                    OutlinedButton(onClick = { showSwitchDialog = false }) { Text("取消") }
+                }
+            )
         }
     }
 }
