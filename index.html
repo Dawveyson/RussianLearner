@@ -39,7 +39,7 @@
   .btn.ghost{background:var(--accent2)}
   .dl-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
   .dl-note{font-size:13px;color:var(--sub)}
-  .re-note{font-size:13px;color:var(--sub)}
+  .re-note{font-size:10px;color:var(--sub)}
   label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
   input,select,textarea{
     width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
@@ -89,8 +89,8 @@
 <div class="wrap">
 
   <header class="hero">
-    <h1>科大er专属的俄语学习器</h1>
-    <p>给科大学子的极简俄语上手小工具 · 几分钟记住最常用的一句俄语</p>
+    <h1>外院er专属的俄语学习器</h1>
+    <p>给外院学子的极简俄语上手小工具 · 几分钟记住最常用的一句俄语</p>
   </header>
 
   <section>
@@ -101,10 +101,11 @@
   <section>
     <h2><span class="dot"></span>下载安卓 App</h2>
     <div class="dl-row">
-      <a class="btn" id="dlBtn" href="https://github.com/Dawveyson/RussianLearner/releases/tag/v1.0" download>📱 下载安卓正式 App（APK）(Github下载，附带更新日志，下载可能较慢)</a>
-      <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/0926MetSROq4C7ijGPWKYfdQg" download>📱 下载安卓正式 App（APK）(iCloud下载-推荐-速度较快)</a>
+      <a class="btn" id="dlBtn" href="https://github.com/Dawveyson/RussianLearner/releases/tag/v1.0" download>📱 下载安卓正式 App（APK）(Github下载，附带更新日志，更新速度快，下载可能较慢)</a>
+      <a class="btn" id="dlBtn" href="https://www.icloud.com/iclouddrive/0926MetSROq4C7ijGPWKYfdQg" download>📱 下载安卓正式 App（APK）(iCloud下载-推荐-速度较快，但是版本更新慢)</a>
       <span class="dl-note">适用于 Android 手机 · 安装时若提示“未知来源”，请在设置中允许本次安装，并且确保在设置中关闭了纯净模式</span>
       <span class="re-note">目前应用已经开始逐步完善，于是取消beta版本，并提供资源包下载（大学通用俄语1-第二版）</span>
+      <span class="re-note">正式版1.0.0开始的所有版本都可以在Github Release里面找到</span>
     </div>
     <div class="dl-row" style="margin-top:12px">
       <a class="btn" href="https://www.icloud.com/iclouddrive/0ebuZy2P0RK6Kz_LykRDO-V4A" download style="background:#5b6675">📄 第二版大学通用俄语1-课本资源包</a>
@@ -113,8 +114,8 @@
   </section>
 
   <section>
-    <h2><span class="dot"></span>意见反馈（功能调试ing暂不可用。。。。。。建议去github提交issues）</h2>
-    <h2><span class="dot"></span>https://github.com/Dawveyson/RussianLearner/issues</h2>
+    <h2><span class="dot"></span>意见反馈（功 “懒” 能 “的” 调 “配” 试 “置”ing暂不可用。。。。。。建议去github提交issues）</h2>
+    <h3><span class="dot"></span>https://github.com/Dawveyson/RussianLearner/issues</h3>
     <p style="margin:0 0 4px;color:var(--sub);font-size:14px">
       遇到问题、想加内容、或单纯想夸一句都行。
     </p>
@@ -243,9 +244,11 @@ form.addEventListener("submit",async(e)=>{
     show("info","即将打开 GitHub Issues 预填页，登录后点 “Submit new issue” 即可提交。");
     window.open(u,"_blank");
   }else{
-    show("err","后端尚未配置：API没有配备❌");
+    show("err","后端尚没有配备❌");
   }
 });
 </script>
 </body>
 </html>
+
+##我讨厌的贱人不许用：） 
