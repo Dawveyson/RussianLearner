@@ -9,12 +9,17 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -24,6 +29,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import android.content.Intent
+import androidx.core.net.toUri
+import com.example.rulearn.BuildConfig
+import com.example.rulearn.data.RemoteConfigCache
 import com.example.rulearn.ui.alphabet.AlphabetScreen
 import com.example.rulearn.ui.alphabet.HandwritingScreen
 import com.example.rulearn.ui.common.AppBottomBar
@@ -60,9 +69,16 @@ object Route {
 @Composable
 fun RootScreen() {
     val nav = rememberNavController()
+    val ctx = LocalContext.current
     val backStack by nav.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
     val showBar = currentRoute in Route.TOP_LEVEL
+
+    var showStartupUpdate by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        val cfg = RemoteConfigCache.refresh()
+        if ((cfg?.latestVersionCode ?: 0) > BuildConfig.VERSION_CODE) showStartupUpdate = true
+    }
 
     val items = listOf(
         NavItem("首页", Icons.Outlined.Home),
@@ -117,6 +133,33 @@ fun RootScreen() {
             composable(Route.SETTINGS) { SettingsScreen(nav) }
             composable(Route.LICENSES) { LicensesScreen(nav) }
         }
+    }
+
+    if (showStartupUpdate) {
+        val cfg = RemoteConfigCache.config.value
+        AlertDialog(
+            onDismissRequest = { showStartupUpdate = false },
+            title = { Text("发现新版本") },
+            text = {
+                Text(
+                    "最新版本：v${cfg?.latestVersionName ?: ""}（versionCode ${cfg?.latestVersionCode}）\n" +
+                        "当前版本：v${BuildConfig.VERSION_NAME}（${BuildConfig.VERSION_CODE}）"
+                )
+            },
+            confirmButton = {
+                if (!cfg?.apkUrl.isNullOrBlank()) {
+                    TextButton(onClick = {
+                        showStartupUpdate = false
+                        runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, cfg!!.apkUrl.toUri())) }
+                    }) { Text("去下载") }
+                } else {
+                    TextButton(onClick = { showStartupUpdate = false }) { Text("好的") }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showStartupUpdate = false }) { Text("稍后") }
+            }
+        )
     }
 }
 

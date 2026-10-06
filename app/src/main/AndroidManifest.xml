@@ -9,7 +9,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="科大er专用牛逼屌炸天俄语学习器"
+        android:label="RuLearner"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:enableOnBackInvokedCallback="true"

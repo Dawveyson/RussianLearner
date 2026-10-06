@@ -50,7 +50,7 @@ fun main() = application {
     val store = KeyValueStore("$dataDir/rulearn.properties")
     if (!AppRepository.ready) AppRepository.init(dataDir, store)
 
-    Window(onCloseRequest = ::exitApplication, title = "RuLearn · 俄语学习") {
+    Window(onCloseRequest = ::exitApplication, title = "RuLearner · 俄语学习") {
         RuLearnTheme {
             val player = remember { DesktopPlayer() }
             AppRoot(player = player)
@@ -116,14 +116,14 @@ fun AppRoot(player: DesktopPlayer) {
 }
 
 private fun titleFor(route: String): String = when (route) {
-    Route.HOME -> "RuLearn · 俄语学习"
+    Route.HOME -> "RuLearner · 俄语学习"
     Route.WORDS -> "学习资源"
     Route.ALPHABET -> "俄语字母"
     Route.ME -> "我的"
     Route.LISTEN -> "随身听"
     Route.SPELLING -> "拼写练习"
     Route.QUIZ -> "闯关测验"
-    else -> "RuLearn"
+    else -> "RuLearner"
 }
 
 @Composable

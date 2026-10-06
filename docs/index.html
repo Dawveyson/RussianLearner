@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RuLearner 公告板</title>
+  <style>
+    :root { --bg:#0f1220; --card:#1a1f33; --fg:#e7e9f3; --muted:#9aa0b5; --accent:#5b8cff; --info:#5b8cff; --warn:#ffb020; --danger:#ff5b6e; --ok:#34d399; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--fg); line-height:1.6; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 64px; }
+    header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+    header h1 { font-size: 26px; margin:0; }
+    .logo { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--accent),#9b5bff); display:flex; align-items:center; justify-content:center; font-weight:800; }
+    .sub { color:var(--muted); margin: 0 0 24px; }
+    .card { background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:20px 22px; margin-bottom:16px; }
+    .ver { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .pill { background:rgba(91,140,255,.15); color:var(--accent); border-radius:999px; padding:4px 12px; font-size:13px; font-weight:600; }
+    .pill.ok { background:rgba(52,211,153,.15); color:var(--ok); }
+    .ann { border-left:4px solid var(--info); }
+    .ann.warn { border-left-color:var(--warn); }
+    .ann.danger { border-left-color:var(--danger); }
+    .ann.ok { border-left-color:var(--ok); }
+    .ann h3 { margin:0 0 6px; font-size:18px; }
+    .ann .date { color:var(--muted); font-size:12px; }
+    .ann p { margin:8px 0 0; white-space:pre-wrap; }
+    .how { color:var(--muted); font-size:14px; }
+    .how code { background:rgba(255,255,255,.08); padding:2px 6px; border-radius:6px; color:var(--fg); }
+    a { color:var(--accent); }
+    footer { color:var(--muted); font-size:12px; text-align:center; margin-top:32px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">Ru</div>
+      <h1>RuLearner 公告板</h1>
+    </header>
+    <p class="sub">版本信息与应用公告 · 由 GitHub 托管，开发者在此发布更新</p>
+
+    <div id="version" class="card">正在加载版本信息…</div>
+    <div id="announcements"></div>
+
+    <div class="card how">
+      <h3>如何配置 / 修改公告？</h3>
+      <p>本页内容来自仓库里的 <code>docs/config.json</code>。要发布新公告或更新版本号，编辑该文件后提交到 GitHub 即可（App 会自动拉取）。<code>config.json</code> 结构：</p>
+      <pre style="overflow:auto"><code>{
+  "latestVersionCode": 10,
+  "latestVersionName": "1.1.0",
+  "apkUrl": "https://github.com/.../app-release.apk",
+  "announcements": [
+    {
+      "id": "唯一ID",
+      "title": "标题",
+      "date": "2026-10-06",
+      "level": "info | warn | danger | ok",
+      "body": "公告正文，支持换行"
+    }
+  ]
+}</code></pre>
+      <p>提示：<code>latestVersionCode</code> 需大于 App 当前的 versionCode 才会提示更新；<code>apkUrl</code> 指向可下载的 APK。</p>
+    </div>
+
+    <footer>RuLearner · Made by Davey With Heart 💗</footer>
+  </div>
+
+  <script>
+    // 优先用同源 config.json（GitHub Pages 部署时），失败再回退 jsDelivr。
+    async function load() {
+      const candidates = [
+        "config.json",
+        "https://cdn.jsdelivr.net/gh/Dawveyson/RussianLearner@main/docs/config.json"
+      ];
+      for (const url of candidates) {
+        try {
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) continue;
+          return await res.json();
+        } catch (e) { /* try next */ }
+      }
+      return null;
+    }
+
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
+    (async () => {
+      const cfg = await load();
+      const verEl = document.getElementById("version");
+      const annEl = document.getElementById("announcements");
+      if (!cfg) {
+        verEl.textContent = "加载失败，请稍后刷新。";
+        return;
+      }
+      const vc = cfg.latestVersionCode || 0;
+      verEl.innerHTML =
+        '<div class="ver"><span class="pill">最新版本 v' + esc(cfg.latestVersionName || "?") + '</span>' +
+        '<span class="pill ok">versionCode ' + esc(vc) + '</span></div>' +
+        (cfg.apkUrl ? '<p style="margin-top:10px"><a href="' + esc(cfg.apkUrl) + '">下载 / 更新 APK</a></p>' : '');
+
+      const list = cfg.announcements || [];
+      if (!list.length) {
+        annEl.innerHTML = '<div class="card">暂无公告。</div>';
+        return;
+      }
+      annEl.innerHTML = list.map(a => {
+        const lvl = esc(a.level || "info");
+        return '<div class="card ann ' + lvl + '">' +
+          '<h3>' + esc(a.title || "公告") + '</h3>' +
+          (a.date ? '<div class="date">' + esc(a.date) + '</div>' : '') +
+          '<p>' + esc(a.body || "") + '</p></div>';
+      }).join("");
+    })();
+  </script>
+</body>
+</html>
