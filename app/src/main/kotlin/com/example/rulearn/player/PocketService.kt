@@ -30,7 +30,8 @@ class PocketService : Service() {
         val startMs: Int,
         val endMs: Int,
         val label: String,
-        val ru: String
+        val ru: String,
+        val zh: String = ""
     )
 
     private var mp: MediaPlayer? = null
@@ -96,12 +97,13 @@ class PocketService : Service() {
                 if (source.isBlank()) continue
                 val startMs = if (own) 0 else (s.start * 1000).toInt()
                 val endMs = if (own) -1 else (s.end * 1000).toInt().takeIf { it > startMs } ?: -1
-                items.add(PlayItem(source, startMs, endMs, "урок ${l.n} · ${s.ru}", s.ru))
+                items.add(PlayItem(source, startMs, endMs, "урок ${l.n} · ${s.ru}", s.ru, s.zh))
             }
         }
         playlist = if (random) items.shuffled() else items
         PocketState.total = playlist.size
         PocketState.lines = playlist.map { it.ru }
+        PocketState.linesZh = playlist.map { it.zh }
         PocketState.currentIndex = if (playlist.isEmpty()) -1 else 0
     }
 
@@ -355,6 +357,7 @@ class PocketService : Service() {
         PocketState.currentIndex = -1
         PocketState.label = "未在播放"
         PocketState.lines = emptyList()
+        PocketState.linesZh = emptyList()
         PocketState.positionMs = 0
         PocketState.durationMs = 0
     }

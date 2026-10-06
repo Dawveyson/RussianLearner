@@ -27,6 +27,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -83,11 +84,14 @@ fun SpellingScreen(nav: NavController) {
     var idx by remember { mutableIntStateOf(0) }
     var input by remember { mutableStateOf("") }
     var result by remember { mutableStateOf<Boolean?>(null) }
-    var showRuKbd by remember { mutableStateOf(false) }
+    // 默写时默认直接显示键盘：这是主要输入方式，收起来反而要多点一次
+    var showRuKbd by remember { mutableStateOf(true) }
+    var shiftOn by remember { mutableStateOf(false) }
 
     fun appendChar(ch: String) {
         input = input + ch
         result = null
+        if (shiftOn) shiftOn = false   // Shift 只生效一次，和真键盘一致
     }
     fun backspace() {
         if (input.isNotEmpty()) {
@@ -99,6 +103,14 @@ fun SpellingScreen(nav: NavController) {
     val entries = book?.entries ?: emptyList()
     val entry = entries.getOrNull(idx)
     val (correct, total) = Prefs.spelling(ctx)
+
+    fun check() {
+        val e = entry ?: return
+        val ok = norm(input) == norm(e.ru)
+        result = ok
+        Prefs.recordSpelling(ctx, ok)
+        AppRepository.recordAnswer(e.ru, ok)
+    }
 
     fun next() {
         result = null
@@ -118,6 +130,18 @@ fun SpellingScreen(nav: NavController) {
                     }
                 }
             )
+        },
+        // 键盘固定在屏幕下半部：放进 bottomBar，不随内容滚动
+        bottomBar = {
+            if (showRuKbd) {
+                RuSoftKeyboard(
+                    onChar = ::appendChar,
+                    onBackspace = ::backspace,
+                    onSpace = { appendChar(" ") },
+                    onEnter = { if (input.isNotBlank()) check() },
+                    shiftOn = shiftOn
+                )
+            }
         }
     ) { pad ->
         Column(
@@ -192,29 +216,22 @@ fun SpellingScreen(nav: NavController) {
                 singleLine = true
             )
 
-            Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.End) {
+            Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                TextButton(onClick = { shiftOn = !shiftOn }) {
+                    Text(
+                        if (shiftOn) "Shift 已开" else "Shift",
+                        fontWeight = if (shiftOn) FontWeight.Bold else FontWeight.Normal
+                    )
+                }
                 TextButton(onClick = { showRuKbd = !showRuKbd }) {
                     Icon(Icons.Filled.Keyboard, contentDescription = null, Modifier.size(18.dp))
                     Text(if (showRuKbd) "收起键盘" else "俄语键盘", Modifier.padding(start = 6.dp))
                 }
             }
 
-            if (showRuKbd) {
-                RuSoftKeyboard(onChar = ::appendChar, onBackspace = ::backspace, onSpace = { appendChar(" ") })
-                Spacer(Modifier.height(8.dp))
-            }
-
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(
-                    onClick = {
-                        val ok = norm(input) == norm(entry!!.ru)
-                        result = ok
-                        Prefs.recordSpelling(ctx, ok)
-                        AppRepository.recordAnswer(entry.ru, ok)
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
+                Button(onClick = { check() }, modifier = Modifier.weight(1f)) {
                     Icon(Icons.Filled.Check, contentDescription = null)
                     Text("检查", Modifier.padding(start = 4.dp))
                 }
@@ -225,7 +242,7 @@ fun SpellingScreen(nav: NavController) {
             when (result) {
                 true -> Text("✓ 正确！", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 false -> Text(
-                    "✗ 正确拼写：${entry!!.ru}",
+                    "✗ 正确拼写：${entry.ru}",
                     color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.Bold
                 )
@@ -237,73 +254,15 @@ fun SpellingScreen(nav: NavController) {
             }
 
             Spacer(Modifier.height(10.dp))
-            OutlinedButtonSpeak(entry!!.ru, ctx)
-
-            Spacer(Modifier.height(90.dp))
-        }
-    }
-}
-
-@Composable
-private fun OutlinedButtonSpeak(ru: String, ctx: android.content.Context) {
-    androidx.compose.material3.OutlinedButton(
-        onClick = { Speaker.speak(ru, true) },
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
-        Text("听发音", Modifier.padding(start = 6.dp))
-    }
-}
-
-/** 内置俄语软键盘：系统未安装西里尔字母输入法时，仍可手动输入。 */
-@Composable
-private fun RuSoftKeyboard(
-    onChar: (String) -> Unit,
-    onBackspace: () -> Unit,
-    onSpace: () -> Unit
-) {
-    val rows = listOf(
-        "йцукенгшщзхъ".toList(),
-        "фывапролдэ".toList(),
-        "ячсмитьбюё".toList()
-    )
-    val keyShape = RoundedCornerShape(8.dp)
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            Modifier.fillMaxWidth().padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            rows.forEach { row ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    row.forEach { ch ->
-                        Box(
-                            Modifier.weight(1f).height(40.dp)
-                                .clip(keyShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
-                                .clickable { onChar(ch.toString()) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(ch.toString(), style = MaterialTheme.typography.bodyLarge)
-                        }
-                    }
-                }
+            OutlinedButton(
+                onClick = { Speaker.speak(entry.ru, true) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text("听发音", Modifier.padding(start = 6.dp))
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Box(
-                    Modifier.weight(1.2f).height(44.dp)
-                        .clip(keyShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
-                        .clickable { onBackspace() },
-                    contentAlignment = Alignment.Center
-                ) { Text("⌫", style = MaterialTheme.typography.bodyLarge) }
-                Box(
-                    Modifier.weight(3f).height(44.dp)
-                        .clip(keyShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
-                        .clickable { onSpace() },
-                    contentAlignment = Alignment.Center
-                ) { Text("Пробел", style = MaterialTheme.typography.bodyMedium) }
-            }
+
+            Spacer(Modifier.height(if (showRuKbd) 20.dp else 90.dp))
         }
     }
 }

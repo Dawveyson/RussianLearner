@@ -60,9 +60,7 @@ class AudioPlayer(private val context: Context) {
                 true
             }
             player.prepare()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                player.playbackParams = player.playbackParams.setSpeed(speed)
-            }
+            runCatching { player.playbackParams = player.playbackParams.setSpeed(speed) }
             if (startMs > 0) player.seekTo(startMs)
             player.start()
             mp = player
@@ -88,7 +86,7 @@ class AudioPlayer(private val context: Context) {
         set(value) {
             field = value
             mp?.let {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && it.isPlaying) {
+                if (it.isPlaying) {
                     runCatching { it.playbackParams = it.playbackParams.setSpeed(value) }
                 }
             }

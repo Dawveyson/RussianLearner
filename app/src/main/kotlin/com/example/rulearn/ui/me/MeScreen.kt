@@ -9,7 +9,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.clickable
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -76,7 +75,6 @@ fun MeScreen(nav: NavController) {
 
     var lessonChoice by remember { mutableIntStateOf(0) }
     var random by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
 
     // 切换课程时，若随身听正在播放，先弹确认框再切歌（避免要先停止才能播其他课）。
     var pendingLesson by remember { mutableIntStateOf(-1) }
@@ -250,15 +248,20 @@ fun MeScreen(nav: NavController) {
                         }
                         Row(
                             Modifier.fillMaxWidth().padding(top = 10.dp),
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            OutlinedButton(onClick = { showLyrics = !showLyrics }) {
+                            // 逐句文本挪到独立页面了，这里只留一个入口，避免长列表把卡片撑得极高
+                            OutlinedButton(
+                                onClick = { nav.navigate(Route.POCKET_LINES) },
+                                enabled = PocketState.lines.isNotEmpty(),
+                                modifier = Modifier.weight(1f)
+                            ) {
                                 Icon(Icons.AutoMirrored.Filled.List, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
-                                Text(if (showLyrics) "隐藏歌词" else "歌词")
+                                Text(
+                                    if (PocketState.lines.isEmpty()) "音频同步词"
+                                    else "音频同步词（${PocketState.lines.size} 段）"
+                                )
                             }
-                        }
-                        AnimatedVisibility(showLyrics) {
-                            if (PocketState.lines.isNotEmpty()) PocketTimeline(ctx)
                         }
                         if (lessons.isEmpty()) {
                             EmptyHint("先导入教材才能使用随身听")
@@ -386,7 +389,7 @@ fun MeScreen(nav: NavController) {
 /** 毫秒转 m:ss，给时间轴进度条用。 */
 private fun fmt(ms: Int): String {
     val s = max(0, ms) / 1000
-    return "${s / 60}:${String.format("%02d", s % 60)}"
+    return "${s / 60}:${String.format(java.util.Locale.US, "%02d", s % 60)}"
 }
 
 @Composable
@@ -398,36 +401,3 @@ private fun LessonChip(value: Int, text: String, selected: Boolean, onClick: () 
     )
 }
 
-/**
- * 歌词时间轴：显示当前播放列表每一段（歌词行），高亮当前、点击跳转、自动滚动，
- * 下方进度条可在当前段内拖动定位。
- */
-@Composable
-private fun PocketTimeline(ctx: android.content.Context) {
-    GlassBox(Modifier.fillMaxWidth()) {
-        Column(
-            Modifier.fillMaxWidth().heightIn(max = 320.dp)
-                .verticalScroll(rememberScrollState()).padding(12.dp)
-        ) {
-            Text(
-                "进度 ${fmt(PocketState.positionMs)} / ${fmt(maxOf(1, PocketState.durationMs))}",
-                style = MaterialTheme.typography.labelSmall
-            )
-            PocketState.lines.forEachIndexed { i, line ->
-                val active = i == PocketState.currentIndex
-                Text(
-                    line,
-                    modifier = Modifier.fillMaxWidth()
-                        .clickable { PocketState.seekIndex(ctx, i) }
-                        .padding(vertical = 8.dp, horizontal = 8.dp),
-                    color = if (active) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = if (active) FontWeight.Bold else FontWeight.Normal,
-                    textAlign = TextAlign.Center,
-                    style = if (active) MaterialTheme.typography.titleMedium
-                    else MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-    }
-}

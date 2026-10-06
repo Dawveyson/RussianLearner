@@ -33,6 +33,7 @@ import android.content.Intent
 import androidx.core.net.toUri
 import com.example.rulearn.BuildConfig
 import com.example.rulearn.data.RemoteConfigCache
+import com.example.rulearn.player.PocketLinesScreen
 import com.example.rulearn.ui.alphabet.AlphabetScreen
 import com.example.rulearn.ui.alphabet.HandwritingScreen
 import com.example.rulearn.ui.common.AppBottomBar
@@ -61,6 +62,7 @@ object Route {
     const val IMPORT = "import"
     const val SETTINGS = "settings"
     const val LICENSES = "licenses"
+    const val POCKET_LINES = "pocket_lines"
 
     val TOP_LEVEL = setOf(HOME, WORDS, ALPHABET, ME)
 }
@@ -132,6 +134,7 @@ fun RootScreen() {
             composable(Route.IMPORT) { ImportScreen(nav) }
             composable(Route.SETTINGS) { SettingsScreen(nav) }
             composable(Route.LICENSES) { LicensesScreen(nav) }
+            composable(Route.POCKET_LINES) { PocketLinesScreen(nav) }
         }
     }
 

@@ -18,6 +18,9 @@ object PocketState {
      */
     var lines by mutableStateOf<List<String>>(emptyList())
 
+    /** 与 [lines] 一一对应的中文释义，供「音频同步词」页面双语显示。 */
+    var linesZh by mutableStateOf<List<String>>(emptyList())
+
     /** 当前段内的播放进度（毫秒），用于进度条。 */
     var positionMs by mutableIntStateOf(0)
     /** 当前段总时长（毫秒）。 */

@@ -36,6 +36,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -51,7 +55,8 @@ import com.example.rulearn.data.CYRILLIC_ALPHABET
 import com.example.rulearn.ui.theme.GlassBox
 import kotlin.random.Random
 
-private val HandwritingFont = FontFamily(Font(R.font.marckscript))
+/** 手写体。marckscript 含完整西里尔字形，字母表页与描红页共用。 */
+val HandwritingFont = FontFamily(Font(R.font.marckscript))
 
 @androidx.compose.material3.ExperimentalMaterial3Api
 @Composable
@@ -63,8 +68,29 @@ fun HandwritingScreen(nav: NavController) {
     val path = remember { Path() }
     val target = if (mode == "letter") selected.upper else selected.sampleRu
 
+    // 笔顺演示：progress 从 0 走到 1，字形按书写方向逐步显现 + 笔尖光点跟随
+    var demo by remember { mutableStateOf(false) }
+    var progress by remember { mutableFloatStateOf(0f) }
+    val isSingle = target.length == 1
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     // 模式或字母一变就清空笔迹，否则上一次的手写会串到新字上
-    LaunchedEffect(mode, selected) { path.reset(); redraw++ }
+    LaunchedEffect(mode, selected) { path.reset(); redraw++; demo = false; progress = 0f }
+
+    LaunchedEffect(demo, target) {
+        if (!demo) { progress = 0f; return@LaunchedEffect }
+        progress = 0f
+        val durationMs = if (isSingle) 1100L else 2600L
+        val startNanos = withFrameMillis { it }
+        while (true) {
+            val nowNanos = withFrameMillis { it }
+            progress = ((nowNanos - startNanos) / 1_000_000f / durationMs).coerceIn(0f, 1f)
+            if (progress >= 1f) break
+        }
+        // 写完停一下再淡出，方便看清最后一笔
+        kotlinx.coroutines.delay(600)
+        demo = false
+    }
 
     Scaffold(
         topBar = {
@@ -124,12 +150,56 @@ fun HandwritingScreen(nav: NavController) {
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    // 描红底：完整浅色字形，始终可见
                     Text(
                         target,
-                        fontSize = if (target.length == 1) 180.sp else 56.sp,
+                        fontSize = if (isSingle) 180.sp else 56.sp,
                         fontFamily = HandwritingFont,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.20f)
                     )
+                    // 笔顺演示层：按书写方向逐步显现，模拟"跟着写"
+                    if (progress > 0f) {
+                        Text(
+                            target,
+                            fontSize = if (isSingle) 180.sp else 56.sp,
+                            fontFamily = HandwritingFont,
+                            color = primaryColor,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .drawWithContent {
+                                    // 对角逐步揭示：左上 -> 右下，模拟"从上到下、从左到右"书写
+                                    clipRect(
+                                        right = size.width * progress,
+                                        bottom = size.height * progress
+                                    ) {
+                                        this@drawWithContent.drawContent()
+                                    }
+                                }
+                        )
+                    }
+                    // 笔尖光点：沿书写方向移动
+                    if (demo && progress in 0f..1f) {
+                        val travel = if (isSingle) 1f else 0.55f
+                        val y = (0.12f + progress * travel).coerceAtMost(0.86f)
+                        val x = 0.5f + (0.30f - progress * 0.60f)
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .drawWithContent {
+                                    drawContent()
+                                    val cx = size.width * x.coerceIn(0.04f, 0.96f)
+                                    val cy = size.height * y
+                                    drawCircle(
+                                        color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.95f),
+                                        radius = 13f
+                                    )
+                                    drawCircle(
+                                        color = primaryColor,
+                                        radius = 8f
+                                    )
+                                }
+                        )
+                    }
                     val primary = MaterialTheme.colorScheme.primary
                     Canvas(
                         modifier = Modifier
@@ -160,7 +230,14 @@ fun HandwritingScreen(nav: NavController) {
                 Modifier.fillMaxWidth().padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Button(onClick = { path.reset(); redraw++ }, modifier = Modifier.weight(1f)) { Text("清除") }
+                Button(
+                    onClick = { path.reset(); redraw++; demo = false; progress = 0f },
+                    modifier = Modifier.weight(1f)
+                ) { Text("清除") }
+                OutlinedButton(
+                    onClick = { path.reset(); redraw++; progress = 0f; demo = true },
+                    modifier = Modifier.weight(1f)
+                ) { Text(if (demo) "书写中…" else "演示笔顺") }
                 Button(
                     onClick = {
                         selected = CYRILLIC_ALPHABET.random(Random)

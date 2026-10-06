@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -104,7 +105,9 @@ private fun AlphabetTable(nav: NavController) {
                                 "${l.upper}${l.lower}",
                                 fontSize = 40.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color.White,
+                                // 大字用手写体（marckscript 含西里尔字形），之前用的是默认字体
+                                fontFamily = HandwritingFont
                             )
                         }
                     }
@@ -168,6 +171,7 @@ private fun AlphabetTable(nav: NavController) {
                         Text(
                             "${l.upper} ${l.lower}",
                             fontSize = 20.sp,
+                            fontFamily = HandwritingFont,
                             fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
                             color = if (active) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.onSurface,
