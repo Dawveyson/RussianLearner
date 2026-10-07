@@ -27,6 +27,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,8 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -69,24 +69,24 @@ fun HandwritingScreen(nav: NavController) {
     val target = if (mode == "letter") selected.upper else selected.sampleRu
 
     // 笔顺演示：progress 从 0 走到 1，字形按书写方向逐步显现 + 笔尖光点跟随
+    // 用 Animatable 而不是手写帧循环：后者在密集重组下会挂起，动画会卡住不动。
     var demo by remember { mutableStateOf(false) }
-    var progress by remember { mutableFloatStateOf(0f) }
+    val animProgress = remember { Animatable(0f) }
     val isSingle = target.length == 1
     val primaryColor = MaterialTheme.colorScheme.primary
 
     // 模式或字母一变就清空笔迹，否则上一次的手写会串到新字上
-    LaunchedEffect(mode, selected) { path.reset(); redraw++; demo = false; progress = 0f }
+    LaunchedEffect(mode, selected) {
+        path.reset(); redraw++; demo = false; animProgress.snapTo(0f)
+    }
 
     LaunchedEffect(demo, target) {
-        if (!demo) { progress = 0f; return@LaunchedEffect }
-        progress = 0f
-        val durationMs = if (isSingle) 1100L else 2600L
-        val startNanos = withFrameMillis { it }
-        while (true) {
-            val nowNanos = withFrameMillis { it }
-            progress = ((nowNanos - startNanos) / 1_000_000f / durationMs).coerceIn(0f, 1f)
-            if (progress >= 1f) break
-        }
+        if (!demo) { animProgress.snapTo(0f); return@LaunchedEffect }
+        animProgress.snapTo(0f)
+        animProgress.animateTo(
+            1f,
+            animationSpec = tween(if (isSingle) 1600 else 3200)
+        )
         // 写完停一下再淡出，方便看清最后一笔
         kotlinx.coroutines.delay(600)
         demo = false
@@ -150,6 +150,9 @@ fun HandwritingScreen(nav: NavController) {
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    // 在组合阶段读一次动画值：这样每帧都会重组，
+                    // 下面 drawWithContent 里捕获的 p 才是当前值（否则永远是初始 0）
+                    val p = animProgress.value
                     // 描红底：完整浅色字形，始终可见
                     Text(
                         target,
@@ -158,7 +161,7 @@ fun HandwritingScreen(nav: NavController) {
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.20f)
                     )
                     // 笔顺演示层：按书写方向逐步显现，模拟"跟着写"
-                    if (progress > 0f) {
+                    if (p > 0f) {
                         Text(
                             target,
                             fontSize = if (isSingle) 180.sp else 56.sp,
@@ -169,8 +172,8 @@ fun HandwritingScreen(nav: NavController) {
                                 .drawWithContent {
                                     // 对角逐步揭示：左上 -> 右下，模拟"从上到下、从左到右"书写
                                     clipRect(
-                                        right = size.width * progress,
-                                        bottom = size.height * progress
+                                        right = size.width * p,
+                                        bottom = size.height * p
                                     ) {
                                         this@drawWithContent.drawContent()
                                     }
@@ -178,10 +181,10 @@ fun HandwritingScreen(nav: NavController) {
                         )
                     }
                     // 笔尖光点：沿书写方向移动
-                    if (demo && progress in 0f..1f) {
+                    if (demo && p in 0f..1f) {
                         val travel = if (isSingle) 1f else 0.55f
-                        val y = (0.12f + progress * travel).coerceAtMost(0.86f)
-                        val x = 0.5f + (0.30f - progress * 0.60f)
+                        val y = (0.12f + p * travel).coerceAtMost(0.86f)
+                        val x = 0.5f + (0.30f - p * 0.60f)
                         Box(
                             Modifier
                                 .fillMaxSize()
@@ -231,11 +234,11 @@ fun HandwritingScreen(nav: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
-                    onClick = { path.reset(); redraw++; demo = false; progress = 0f },
+                    onClick = { path.reset(); redraw++; demo = false },
                     modifier = Modifier.weight(1f)
                 ) { Text("清除") }
                 OutlinedButton(
-                    onClick = { path.reset(); redraw++; progress = 0f; demo = true },
+                    onClick = { path.reset(); redraw++; demo = true },
                     modifier = Modifier.weight(1f)
                 ) { Text(if (demo) "书写中…" else "演示笔顺") }
                 Button(

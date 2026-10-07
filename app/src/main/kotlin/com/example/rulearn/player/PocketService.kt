@@ -35,6 +35,13 @@ class PocketService : Service() {
     )
 
     private var mp: MediaPlayer? = null
+
+    /**
+     * 连续播放失败次数。
+     * 失败会顺带跳到下一段，若整份教材的音频都缺失/损坏，就会一路递归跳完整列表，
+     * 段数很大时可能把栈打爆。这里设个上限：连续失败超过 3 次就停下并提示。
+     */
+    private var failStreak = 0
     private var session: MediaSession? = null
     private var playlist: List<PlayItem> = emptyList()
     private var pos = 0
@@ -120,6 +127,7 @@ class PocketService : Service() {
                 start()
             }
             // 随身听要发声：让页面里的播放器让路，避免「教材和随身听同时响」
+            failStreak = 0
             PlaybackBus.onPocketPlay()
             PocketState.isPlaying = true
             PocketState.currentIndex = pos
@@ -132,6 +140,15 @@ class PocketService : Service() {
             refresh()
         } catch (e: Exception) {
             e.printStackTrace()
+            failStreak++
+            if (failStreak >= 3) {
+                // 连续这么多段都放不出来，多半是音频路径失效了，停在这里比重试更有意义
+                releasePlayer()
+                PocketState.isPlaying = false
+                PocketState.label = "音频无法播放，请检查音频文件"
+                refresh()
+                return
+            }
             next(auto = true)
         }
     }

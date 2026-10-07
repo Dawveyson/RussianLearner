@@ -11,8 +11,8 @@ android {
         applicationId = "com.example.rulearn"
         minSdk = 24
         targetSdk = 37
-        versionCode = 11
-        versionName = "1.0.2"
+        versionCode = 12
+        versionName = "1.0.3"
     }
 
     signingConfigs {
