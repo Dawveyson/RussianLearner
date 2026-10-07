@@ -139,6 +139,7 @@ fun SpellingScreen(nav: NavController) {
                     onBackspace = ::backspace,
                     onSpace = { appendChar(" ") },
                     onEnter = { if (input.isNotBlank()) check() },
+                    onShiftClick = { shiftOn = !shiftOn },
                     shiftOn = shiftOn
                 )
             }
@@ -216,13 +217,7 @@ fun SpellingScreen(nav: NavController) {
                 singleLine = true
             )
 
-            Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                TextButton(onClick = { shiftOn = !shiftOn }) {
-                    Text(
-                        if (shiftOn) "Shift 已开" else "Shift",
-                        fontWeight = if (shiftOn) FontWeight.Bold else FontWeight.Normal
-                    )
-                }
+            Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = { showRuKbd = !showRuKbd }) {
                     Icon(Icons.Filled.Keyboard, contentDescription = null, Modifier.size(18.dp))
                     Text(if (showRuKbd) "收起键盘" else "俄语键盘", Modifier.padding(start = 6.dp))

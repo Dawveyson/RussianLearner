@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -32,12 +29,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,12 +48,20 @@ import com.example.rulearn.data.OnlineMeaning
 import com.example.rulearn.data.ProgressStore
 import com.example.rulearn.data.WordEntry
 import com.example.rulearn.player.Speaker
-import com.example.rulearn.ui.common.LocalWordArtContentColor
-import com.example.rulearn.ui.common.WordArt
 import com.example.rulearn.ui.theme.GlassCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URLDecoder
+
+/** 网易有道词典的常见包名，装了就直接跳它。 */
+private val YOUDAO_PACKAGES = listOf(
+    "com.youdao.dict",      // 网易有道词典
+    "com.youdao.hindict",  // 有道词典 HD
+    "com.netease.youdao"   // 网易有道
+)
+
+/** 掌握度按钮的连点冷却时间（毫秒）：冷却期内忽略新点击。 */
+private const val CLICK_COOLDOWN_MS = 700L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,11 +81,18 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
         loading = false
     }
 
-    val preferNet = Prefs.preferNetworkTts(ctx)
-    // 从已收集的 progress 取值，才能在「记住了/忘记了」后立即刷新 Lv 与对错次数；
-    // 若用 AppRepository.masteryOf() 读 StateFlow.value，Compose 不会跟踪，界面不更新。
     val mastery = remember(word, progress) { ProgressStore.of(progress, word) }
     val entry = local ?: WordEntry(word, online?.translation ?: "")
+
+    // 掌握度：限制连点，否则狂点会让 seen/ok/bad 计数虚高、复习间隔失真
+    var lastClick by remember(word) { mutableLongStateOf(0L) }
+    val cooling = System.currentTimeMillis() - lastClick < CLICK_COOLDOWN_MS
+    fun answer(ok: Boolean) {
+        val now = System.currentTimeMillis()
+        if (now - lastClick < CLICK_COOLDOWN_MS) return
+        lastClick = now
+        AppRepository.recordAnswer(word, ok)
+    }
 
     Scaffold(
         topBar = {
@@ -102,60 +114,43 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // 单词配图卡
+            // 单词主体（原先上方那块 WordArt 装饰图按要求移除了）
             GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.fillMaxWidth()) {
-                    androidx.compose.foundation.layout.Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(14.dp)
-                            .height(130.dp)
-                            .clip(RoundedCornerShape(18.dp))
-                    ) {
-                        WordArt(word, Modifier.matchParentSize()) {
+                Row(
+                    Modifier.fillMaxWidth().padding(18.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            word,
+                            fontSize = 34.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        if (!online?.phonetic.isNullOrBlank()) {
                             Text(
-                                word.take(2),
-                                fontSize = 64.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = LocalWordArtContentColor.current.copy(alpha = 0.85f),
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .padding(14.dp)
+                                "音标：${online?.phonetic}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 2.dp)
                             )
                         }
+                        Text(
+                            "Lv.${mastery.level} · 学 ${mastery.seen} 次 · 对 ${mastery.ok} / 错 ${mastery.bad}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 6.dp)
+                        )
                     }
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text(
-                                word,
-                                fontSize = 30.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            if (!online?.phonetic.isNullOrBlank()) {
-                                Text(
-                                    "音标：${online?.phonetic}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                        IconButton(onClick = { Speaker.speak(word, false) }) {
-                            Icon(Icons.Filled.VolumeUp, contentDescription = "系统朗读", tint = MaterialTheme.colorScheme.primary)
-                        }
-                        IconButton(onClick = { Speaker.speak(word, true) }) {
-                            Icon(Icons.Filled.Language, contentDescription = "网络发音", tint = MaterialTheme.colorScheme.primary)
-                        }
+                    IconButton(onClick = { Speaker.speak(word, false) }) {
+                        Icon(Icons.Filled.VolumeUp, contentDescription = "系统朗读", tint = MaterialTheme.colorScheme.primary)
+                    }
+                    IconButton(onClick = { Speaker.speak(word, true) }) {
+                        Icon(Icons.Filled.Language, contentDescription = "网络发音", tint = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
 
-            // 释义
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
                     Text("释义", fontWeight = FontWeight.Bold)
@@ -165,11 +160,7 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
                         online != null -> online!!.translation
                         else -> "（暂无释义）"
                     }
-                    Text(
-                        text,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(top = 6.dp)
-                    )
+                    Text(text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 6.dp))
                     if (local == null && online != null) {
                         Text(
                             "来自在线词典（离线词库中没有该词）",
@@ -180,7 +171,7 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
                     }
                     if (!Speaker.ttsReady) {
                         Text(
-                            "系统未装俄语语音引擎，已自动使用网络发音。可在「设置」安装离线语音包。",
+                            "系统未装俄语语音引擎，当前使用网络发音。",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(top = 6.dp)
@@ -189,52 +180,73 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
                 }
             }
 
-            // 掌握度
+            // 掌握度操作（带连点冷却）
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text("掌握度 Lv.${mastery.level}", fontWeight = FontWeight.Bold)
-                    Text(
-                        "学习 ${mastery.seen} 次 · 答对 ${mastery.ok} · 答错 ${mastery.bad}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+                    Text("掌握度", fontWeight = FontWeight.Bold)
                     Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         OutlinedButton(
-                            onClick = { AppRepository.recordAnswer(word, false) },
+                            onClick = { answer(false) },
+                            enabled = !cooling,
                             modifier = Modifier.weight(1f)
                         ) { Text("忘记了") }
                         Button(
-                            onClick = { AppRepository.recordAnswer(word, true) },
+                            onClick = { answer(true) },
+                            enabled = !cooling,
                             modifier = Modifier.weight(1f)
                         ) { Text("记住了") }
+                    }
+                    if (cooling) {
+                        Text(
+                            "操作过于频繁，请稍候再试",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 6.dp)
+                        )
                     }
                 }
             }
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(
-                    onClick = {
-                        runCatching {
-                            ctx.startActivity(
-                                Intent(Intent.ACTION_VIEW, Uri.parse("https://ru.wiktionary.org/wiki/${Uri.encode(word)}"))
-                            )
-                        }
-                    },
+                    onClick = { openYoudao(ctx, word) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Filled.Language, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text("Wiktionary", Modifier.padding(start = 6.dp))
+                    Text("有道词典", Modifier.padding(start = 6.dp))
                 }
                 OutlinedButton(
-                    onClick = {
-                        runCatching { ctx.startActivity(Intent("android.speech.tts.action.INSTALL_TTS_DATA")) }
-                    },
+                    onClick = { openTtsInstall(ctx) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Filled.VolumeUp, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text("安装语音包", Modifier.padding(start = 6.dp))
+                    Text("语音包", Modifier.padding(start = 6.dp))
                 }
+            }
+            Text(
+                "「有道词典」：已安装 App 会直接打开查词；没装则跳有道网页版。" +
+                    "「语音包」：俄语离线语音需系统 TTS 引擎，App 不附带语音文件（通常几十 MB），" +
+                    "未装引擎时会打开引擎下载页。",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                "提示：Wiktionary 在部分网络环境下可能无法访问，打不开属正常现象。",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            OutlinedButton(
+                onClick = {
+                    runCatching {
+                        ctx.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://ru.wiktionary.org/wiki/${Uri.encode(word)}"))
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Filled.Language, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text("在 Wiktionary 查看（需联网，可能不可用）", Modifier.padding(start = 6.dp))
             }
 
             if (entry.note.isNotBlank()) {
@@ -248,6 +260,43 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
                         modifier = Modifier.padding(12.dp)
                     )
                 }
+            }
+        }
+    }
+}
+
+/** 装了网易有道词典就直接打开查词，没装就跳有道网页版。 */
+private fun openYoudao(ctx: android.content.Context, word: String) {
+    val pm = ctx.packageManager
+    val installed = YOUDAO_PACKAGES.firstOrNull { pkg ->
+        runCatching { pm.getPackageInfo(pkg, 0); true }.getOrDefault(false)
+    }
+    if (installed != null) {
+        val intent = Intent("com.youdao.dict.action.SEARCH").apply {
+            setPackage(installed)
+            putExtra("query", word)
+        }
+        if (runCatching { ctx.startActivity(intent) }.isSuccess) return
+    }
+    val web = "https://dict.youdao.com/result?word=${Uri.encode(word)}&lang=ru"
+    runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(web))) }
+}
+
+/** 打开系统 TTS 引擎安装页；没有可用引擎时改为打开引擎下载页。 */
+private fun openTtsInstall(ctx: android.content.Context) {
+    if (Speaker.hasAnyTtsEngine(ctx)) {
+        runCatching { ctx.startActivity(Intent("android.speech.tts.action.INSTALL_TTS_DATA")) }
+    } else {
+        runCatching {
+            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.tts")))
+        }.onFailure {
+            runCatching {
+                ctx.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.tts")
+                    )
+                )
             }
         }
     }

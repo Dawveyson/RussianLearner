@@ -49,6 +49,7 @@ import com.example.rulearn.core.Prefs
 import com.example.rulearn.data.AppRepository
 import com.example.rulearn.data.BackupStore
 import com.example.rulearn.data.RemoteConfigCache
+import com.example.rulearn.player.Speaker
 import com.example.rulearn.ui.Route
 import com.example.rulearn.ui.theme.GlassCard
 import kotlinx.coroutines.Dispatchers
@@ -195,18 +196,41 @@ fun SettingsScreen(nav: NavController) {
                         )
                     }
                     Text(
-                        "系统未装俄语语音包时会自动改用网络发音。",
+                        if (Speaker.hasAnyTtsEngine(ctx)) {
+                            "俄语离线语音由系统 TTS 引擎提供；未装俄语语音时会自动改用网络发音。"
+                        } else {
+                            "本机没有检测到任何 TTS 引擎，当前使用网络发音。" +
+                                "俄语离线语音通常有几十 MB，App 本身不附带，需先安装一个 TTS 引擎。"
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     OutlinedButton(
                         onClick = {
-                            runCatching { ctx.startActivity(Intent("android.speech.tts.action.INSTALL_TTS_DATA")) }
+                            if (Speaker.hasAnyTtsEngine(ctx)) {
+                                runCatching { ctx.startActivity(Intent("android.speech.tts.action.INSTALL_TTS_DATA")) }
+                            } else {
+                                // 没有引擎时系统安装页打不开，直接去引擎下载页，避免"点了没反应"
+                                val market = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=com.google.android.tts")
+                                )
+                                if (runCatching { ctx.startActivity(market) }.isFailure) {
+                                    runCatching {
+                                        ctx.startActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.tts")
+                                            )
+                                        )
+                                    }
+                                }
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Filled.VolumeUp, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
-                        Text("下载 / 安装俄语语音包")
+                        Text(if (Speaker.hasAnyTtsEngine(ctx)) "安装 / 下载俄语语音包" else "获取 TTS 引擎")
                     }
                 }
             }

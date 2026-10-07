@@ -37,6 +37,7 @@ fun RuSoftKeyboard(
     onBackspace: () -> Unit,
     onSpace: () -> Unit,
     onEnter: (() -> Unit)? = null,
+    onShiftClick: (() -> Unit)? = null,
     shiftOn: Boolean = false
 ) {
     val rows = listOf(
@@ -79,10 +80,16 @@ fun RuSoftKeyboard(
                     .weight(1.4f)
                     .height(40.dp)
                     .clip(keyShape)
-                    .background(funcBg),
+                    .background(if (shiftOn) MaterialTheme.colorScheme.primary.copy(alpha = 0.22f) else funcBg)
+                    .clickable { onShiftClick?.invoke() },
                 contentAlignment = Alignment.Center
             ) {
-                Text("Shift", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    "Shift",
+                    fontSize = 12.sp,
+                    color = if (shiftOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = if (shiftOn) FontWeight.Bold else FontWeight.Normal
+                )
             }
             Box(
                 Modifier

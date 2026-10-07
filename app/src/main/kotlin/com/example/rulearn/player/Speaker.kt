@@ -1,6 +1,7 @@
 package com.example.rulearn.player
 
 import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
 import android.speech.tts.TextToSpeech
 import com.example.rulearn.data.OnlineDict
@@ -28,6 +29,22 @@ object Speaker {
     }
 
     val ttsReady: Boolean get() = ready
+
+    /**
+     * 系统里是否存在任意可用的 TTS 引擎。
+     *
+     * 「安装语音包」之前直接发 INSTALL_TTS_DATA，在没装引擎的设备上点了毫无反应，
+     * 用户根本不知道卡在哪。这里先探测有没有引擎，据此决定是打开系统安装页，
+     * 还是退到引擎下载页。
+     */
+    fun hasAnyTtsEngine(ctx: Context): Boolean = runCatching {
+        val pm: android.content.pm.PackageManager = ctx.packageManager
+        val services = pm.queryIntentServices(
+            Intent("android.intent.action.TTS_SERVICE"),
+            0
+        )
+        !services.isNullOrEmpty()
+    }.getOrDefault(false)
 
     /** 网络发音（有道 dictvoice），免密钥、国内可用。 */
     fun speakNetwork(word: String) {

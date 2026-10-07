@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.rulearn.data.AppRepository
 import com.example.rulearn.data.WordBook
+import com.example.rulearn.player.Speaker
 import com.example.rulearn.ui.Route
 import com.example.rulearn.ui.common.EmptyHint
 import com.example.rulearn.ui.common.RuKeyboard
@@ -168,6 +171,17 @@ private fun BookTab(nav: NavController) {
                                     modifier = Modifier.padding(start = 8.dp)
                                 )
                             }
+                            // 每行右侧独立发音按钮，不用点进详情
+                            IconButton(
+                                onClick = { Speaker.speak(e.ru, false) },
+                                modifier = Modifier.padding(start = 4.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.VolumeUp,
+                                    contentDescription = "朗读 ${e.ru}",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
                 }
@@ -224,6 +238,13 @@ private fun SearchTab(nav: NavController) {
                                     e.zh.ifBlank { "（无释义）" },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            IconButton(onClick = { Speaker.speak(e.ru, false) }) {
+                                Icon(
+                                    Icons.Filled.VolumeUp,
+                                    contentDescription = "朗读 ${e.ru}",
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
