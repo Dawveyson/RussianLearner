@@ -35,9 +35,23 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            // 仅当提供了签名信息时才用 release 签名；否则回退 debug 签名，方便开源协作者直接构建。
-            signingConfig = signingConfigs.findByName("release")?.takeIf { it.storeFile != null }
-                ?: signingConfigs.getByName("debug")
+            // 正式发布必须用 release 签名（读取 ~/.gradle/gradle.properties 或环境变量中的
+            // RU_KEYSTORE / RU_KEYSTORE_PASSWORD / RU_KEY_ALIAS / RU_KEY_PASSWORD）。
+            // 只有在显式设置 RU_ALLOW_DEBUG_SIGNING=true 时才允许回退 debug 签名，
+            // 避免"以为发了正式版、其实是 debug 签名"的情况静默发生。
+            val releaseSigning = signingConfigs.findByName("release")?.takeIf { it.storeFile != null }
+            val allowDebug = (project.findProperty("RU_ALLOW_DEBUG_SIGNING") as? String)
+                ?.equals("true", ignoreCase = true) == true
+            signingConfig = releaseSigning ?: if (allowDebug) {
+                signingConfigs.getByName("debug")
+            } else {
+                // 没配置正式签名就直接失败：发 Release 必须是正式签名
+                throw GradleException(
+                    "缺少正式签名配置：请在 ~/.gradle/gradle.properties 或环境变量中设置 " +
+                        "RU_KEYSTORE / RU_KEYSTORE_PASSWORD / RU_KEY_ALIAS / RU_KEY_PASSWORD。" +
+                        "若只是本地自测，可显式设置 -PRU_ALLOW_DEBUG_SIGNING=true 允许回退 debug 签名。"
+                )
+            }
         }
     }
 
