@@ -21,16 +21,8 @@
 | 设置 | 每日目标、有道智云密钥、发音、**导出/导入学习进度**、检查更新、查看公告 |
 | 小组件 | 桌面「今日学习」「每日一词」两个小组件 |
 
-### 🍎 iOS（SwiftUI + Liquid Glass）
-原生重写，**功能与 Android 对齐**，界面按 iOS 习惯重做（非照搬安卓）：
 
-- 全部卡片使用 iOS 26 原生 `glassEffect` Liquid Glass
-- 原生 `NavigationStack` / `searchable` / `fileImporter` / `fileExporter` / `Slider`
-- 俄语 TTS 用 `AVSpeechSynthesizer`，无俄语语音包时自动回退有道网络发音
-- **自带纯 Swift 的 DEFLATE + zip 读取器**（iOS 无内置 zip 解压），支持 zip 音频书
-- 数据格式与 Android **完全一致**，备份文件两端可互换
-
-### 🖥️ 桌面端（Compose for Desktop）
+### 🖥️ 桌面端（Compose for Desktop）开发中。。
 macOS / Windows 原生窗口应用，共享同一套 `shared` 数据层。
 
 ---
@@ -200,29 +192,6 @@ bash tools/backup_progress.sh /path/to/rulearn-progress-20261006-150000.json
 | `tools/download_letter_audio.py` | 下载字母 / 例词发音音频 |
 
 ---
-
-## 网页分发页（GitHub Pages）
-
-仓库根目录的 `index.html` 是一套独立的静态分发页（俄语常用短语速记 + 意见反馈表单），可部署到 GitHub Pages：
-
-1. 仓库 → **Settings → Pages → Source** 选 `main` 分支根目录
-2. 访问 `https://<用户名>.github.io/<仓库名>/`
-
-**让反馈发到 GitHub Issues**：编辑 `index.html` 顶部的 `CONFIG`：
-
-```js
-const CONFIG = {
-  OWNER: "YOUR_GITHUB_USERNAME",
-  REPO:  "YOUR_REPO_NAME",
-  TOKEN: ""        // 留空 = 预填 Issue 的方式；填入 Fine-grained PAT 可自动建 Issue
-};
-```
-
-- **方式一（自动）**：填 `TOKEN`，权限只给 `Issues: Read and write`。注意 Token 会出现在网页源码里，只建议给它这一个权限并设置较短过期时间。
-- **方式二（无需 Token）**：`TOKEN` 留空，点击反馈会打开**已预填内容**的 GitHub 新建 Issue 页，提交后同样出现在仓库 Issues 里。
-
----
-
 ## 开源许可
 
 [Apache License 2.0](LICENSE) · 版权声明见 [NOTICE](NOTICE)。
