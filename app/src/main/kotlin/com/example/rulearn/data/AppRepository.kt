@@ -188,6 +188,23 @@ object AppRepository {
     }
 
     /**
+     * 仅「到期且已学过」的旧词（用于「每天先复习旧单词」）。
+     * 没学过的词不算旧词，不会进这个队列。
+     */
+    fun dueWords(limit: Int = 40): List<WordEntry> {
+        val now = System.currentTimeMillis()
+        val prog = _progress.value
+        val all = LinkedHashMap<String, WordEntry>()
+        for (b in practiceBooks()) for (e in b.entries) {
+            all.putIfAbsent(e.ru.lowercase(), e)
+        }
+        return all.values.filter {
+            val m = prog[it.ru.lowercase()]
+            m != null && m.seen > 0 && m.due <= now
+        }.shuffled().take(limit)
+    }
+
+    /**
      * 桌面小组件用的「每日一词」。
      * 优先从用户自己的词库里取（按天轮换，保证同一天多次刷新结果一致），
      * 用户还没导入词库时回落到内置的一组俄语短句，让小组件不至于空白。

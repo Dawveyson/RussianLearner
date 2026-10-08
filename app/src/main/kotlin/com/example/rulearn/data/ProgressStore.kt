@@ -6,11 +6,14 @@ import java.io.File
 
 /**
  * 轻量间隔重复（SRS）记录。按「俄语词条原文小写」为键，跨词书共享掌握度。
- * level 0..5，对应复习间隔 0/1/2/4/7/15 天。
+ * level 0..6，复习间隔遵循艾宾浩斯遗忘曲线的大致梯度：
+ * 当天(0) → 1天 → 2天 → 4天 → 7天 → 15天 → 30天。
+ * 答对升级（间隔拉长），答错降级（回到更短的间隔重新巩固）。
  */
 object ProgressStore {
 
-    private val INTERVAL_DAYS = longArrayOf(0, 1, 2, 4, 7, 15)
+    private val INTERVAL_DAYS = longArrayOf(0, 1, 2, 4, 7, 15, 30)
+    private const val MAX_LEVEL = 6
     private const val FILE = "progress.json"
 
     fun load(ctx: Context): Map<String, Mastery> {
@@ -22,7 +25,7 @@ object ProgressStore {
             o.keys().forEach { k ->
                 val v = o.getJSONObject(k)
                 out[k] = Mastery(
-                    level = v.optInt("lvl", 0).coerceIn(0, 5),
+                    level = v.optInt("lvl", 0).coerceIn(0, MAX_LEVEL),
                     due = v.optLong("due", 0L),
                     seen = v.optInt("seen", 0),
                     ok = v.optInt("ok", 0),
@@ -49,7 +52,7 @@ object ProgressStore {
     fun answer(map: Map<String, Mastery>, ru: String, correct: Boolean): Mastery {
         val key = ru.trim().lowercase()
         val cur = map[key] ?: Mastery()
-        val level = if (correct) (cur.level + 1).coerceAtMost(5) else (cur.level - 1).coerceAtLeast(0)
+        val level = if (correct) (cur.level + 1).coerceAtMost(MAX_LEVEL) else (cur.level - 1).coerceAtLeast(0)
         return Mastery(
             level = level,
             due = System.currentTimeMillis() + INTERVAL_DAYS[level] * 86_400_000L,

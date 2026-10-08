@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -50,6 +51,7 @@ import com.example.rulearn.data.AppRepository
 import com.example.rulearn.data.BackupStore
 import com.example.rulearn.data.RemoteConfigCache
 import com.example.rulearn.player.Speaker
+import com.example.rulearn.player.TtsPack
 import com.example.rulearn.ui.Route
 import com.example.rulearn.ui.theme.GlassCard
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +76,16 @@ fun SettingsScreen(nav: NavController) {
     var keyMsg by remember { mutableStateOf("") }
 
     var preferNet by remember { mutableStateOf(Prefs.preferNetworkTts(ctx)) }
+    var offlineFirst by remember { mutableStateOf(Prefs.ttsOfflineFirst(ctx)) }
+    var autoDl by remember { mutableStateOf(Prefs.autoDownloadTts(ctx)) }
     var confirmReset by remember { mutableStateOf(false) }
+
+    // ---- 离线语音包 ----
+    val practiceWords = remember { AppRepository.practiceBooks().flatMap { it.entries }.map { it.ru }.distinct() }
+    var cachedCount by remember { mutableStateOf(TtsPack.count(ctx)) }
+    var packBusy by remember { mutableStateOf(false) }
+    var packDone by remember { mutableStateOf(0) }
+    var packTotal by remember { mutableStateOf(0) }
 
     // ---- 备份与更新 ----
     var backupMsg by remember { mutableStateOf("") }
@@ -184,33 +195,122 @@ fun SettingsScreen(nav: NavController) {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("发音", fontWeight = FontWeight.Bold)
+
+                    Text(
+                        if (Speaker.hasAnyTtsEngine(ctx)) {
+                            "已检测到系统 TTS 引擎；未装俄语语音时会自动改用网络发音。"
+                        } else {
+                            "本机没有可用的 TTS 引擎——Google 俄语语音在国内应用商店常提示" +
+                                "「此 app 在你的国家或地区不可用」。可改用下面的「离线语音包」或网络发音，无需系统 TTS。"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
                     Row(
                         Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("优先使用网络发音（有道）", modifier = Modifier.weight(1f))
+                        Text("优先使用网络发音（有道，免密钥）", modifier = Modifier.weight(1f))
                         Switch(
                             checked = preferNet,
                             onCheckedChange = { preferNet = it; Prefs.setPreferNetworkTts(ctx, it) }
                         )
                     }
+
+                    Text("离线语音包", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
                     Text(
-                        if (Speaker.hasAnyTtsEngine(ctx)) {
-                            "俄语离线语音由系统 TTS 引擎提供；未装俄语语音时会自动改用网络发音。"
-                        } else {
-                            "本机没有检测到任何 TTS 引擎，当前使用网络发音。" +
-                                "俄语离线语音通常有几十 MB，App 本身不附带，需先安装一个 TTS 引擎。"
-                        },
+                        "把每个单词的发音下载缓存在本机，之后发音不依赖系统 TTS、也不依赖联网。" +
+                            "当前已缓存 $cachedCount / ${practiceWords.size} 个词。",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text("自动下载发音包（TTS 扩展包）", fontWeight = FontWeight.Bold)
+                            Text(
+                                "开启后，播放/学习时后台静默缓存缺失的词；打开此开关会立即拉取整包。",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = autoDl,
+                            onCheckedChange = {
+                                autoDl = it
+                                Prefs.setAutoDownloadTts(ctx, it)
+                                if (it && practiceWords.isNotEmpty()) {
+                                    scope.launch {
+                                        packBusy = true; packDone = 0; packTotal = practiceWords.size
+                                        withContext(Dispatchers.IO) {
+                                            TtsPack.download(ctx, practiceWords) { d, t -> packDone = d; packTotal = t }
+                                        }
+                                        cachedCount = TtsPack.count(ctx)
+                                        packBusy = false
+                                    }
+                                }
+                            }
+                        )
+                    }
+                    if (packBusy) {
+                        LinearProgressIndicator(
+                            progress = { if (packTotal == 0) 0f else packDone.toFloat() / packTotal },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(
+                            "正在下载 $packDone / $packTotal …",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    packBusy = true; packDone = 0; packTotal = practiceWords.size
+                                    withContext(Dispatchers.IO) {
+                                        TtsPack.download(ctx, practiceWords) { d, t -> packDone = d; packTotal = t }
+                                    }
+                                    cachedCount = TtsPack.count(ctx)
+                                    packBusy = false
+                                }
+                            },
+                            enabled = !packBusy && practiceWords.isNotEmpty(),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Filled.VolumeUp, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
+                            Text(if (packBusy) "下载中…" else "下载离线语音包")
+                        }
+                        if (cachedCount > 0) {
+                            OutlinedButton(
+                                onClick = { TtsPack.clear(ctx); cachedCount = TtsPack.count(ctx) },
+                                modifier = Modifier.weight(1f)
+                            ) { Text("清除缓存") }
+                        }
+                    }
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("离线优先发音（无网也能读）", modifier = Modifier.weight(1f))
+                        Switch(
+                            checked = offlineFirst,
+                            onCheckedChange = { offlineFirst = it; Prefs.setTtsOfflineFirst(ctx, it) }
+                        )
+                    }
+
                     OutlinedButton(
                         onClick = {
                             if (Speaker.hasAnyTtsEngine(ctx)) {
                                 runCatching { ctx.startActivity(Intent("android.speech.tts.action.INSTALL_TTS_DATA")) }
                             } else {
-                                // 没有引擎时系统安装页打不开，直接去引擎下载页，避免"点了没反应"
+                                // 没有引擎时系统安装页打不开，去引擎下载页（可能被区域限制）
                                 val market = Intent(
                                     Intent.ACTION_VIEW,
                                     Uri.parse("market://details?id=com.google.android.tts")
@@ -230,7 +330,7 @@ fun SettingsScreen(nav: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Filled.VolumeUp, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
-                        Text(if (Speaker.hasAnyTtsEngine(ctx)) "安装 / 下载俄语语音包" else "获取 TTS 引擎")
+                        Text(if (Speaker.hasAnyTtsEngine(ctx)) "安装 / 下载俄语语音数据" else "获取系统 TTS 引擎（可能被区域限制）")
                     }
                 }
             }

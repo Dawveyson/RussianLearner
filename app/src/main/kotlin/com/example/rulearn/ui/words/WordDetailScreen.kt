@@ -2,6 +2,7 @@ package com.example.rulearn.ui.words
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,6 +51,7 @@ import com.example.rulearn.data.WordEntry
 import com.example.rulearn.player.Speaker
 import com.example.rulearn.ui.theme.GlassCard
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.URLDecoder
 
@@ -84,14 +86,28 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
     val mastery = remember(word, progress) { ProgressStore.of(progress, word) }
     val entry = local ?: WordEntry(word, online?.translation ?: "")
 
-    // 掌握度：限制连点，否则狂点会让 seen/ok/bad 计数虚高、复习间隔失真
+    // 掌握度：限制连点，否则狂点会让 seen/ok/bad 计数虚高、复习间隔失真。
+    // cooling 只在「被判定为连点（冷却期内重复点击）」时为真、用于提示；
+    // 普通单次点击正常记录、不弹提示。冷却结束后由 LaunchedEffect 自动复位。
     var lastClick by remember(word) { mutableLongStateOf(0L) }
-    val cooling = System.currentTimeMillis() - lastClick < CLICK_COOLDOWN_MS
+    var cooling by remember(word) { mutableStateOf(false) }
+    LaunchedEffect(cooling) {
+        if (cooling) {
+            delay(CLICK_COOLDOWN_MS)
+            cooling = false
+        }
+    }
     fun answer(ok: Boolean) {
         val now = System.currentTimeMillis()
-        if (now - lastClick < CLICK_COOLDOWN_MS) return
+        if (now - lastClick < CLICK_COOLDOWN_MS) {
+            // 冷却期内重复点击：判定为连点，弹提示并忽略本次记录，避免计数虚高
+            cooling = true
+            Toast.makeText(ctx, "操作过于频繁，请稍候再试", Toast.LENGTH_SHORT).show()
+            return
+        }
         lastClick = now
         AppRepository.recordAnswer(word, ok)
+        Toast.makeText(ctx, if (ok) "已标记：记住了 ✓" else "已标记：忘记了", Toast.LENGTH_SHORT).show()
     }
 
     Scaffold(

@@ -59,21 +59,27 @@ class AudioPlayer(private val context: Context) {
                 onComplete?.invoke()
                 true
             }
-            player.prepare()
-            runCatching { player.playbackParams = player.playbackParams.setSpeed(speed) }
-            if (startMs > 0) player.seekTo(startMs)
-            player.start()
-            mp = player
-            if (endMs > startMs) {
-                val task = Runnable {
-                    if (mp === player) {
-                        runCatching { player.pause() }
-                        onComplete?.invoke()
-                    }
+            // 用 prepareAsync 而非同步 prepare：网络/较大音频若用同步 prepare 会阻塞主线程，
+            // 轻则卡顿、重则触发 ANR 被系统杀掉（表现为「点击后闪退」）。真正 start 推迟到 onPrepared。
+            player.setOnPreparedListener {
+                runCatching {
+                    it.playbackParams = it.playbackParams.setSpeed(speed)
+                    if (startMs > 0) it.seekTo(startMs)
+                    it.start()
                 }
-                stopTask = task
-                handler.postDelayed(task, (endMs - startMs).toLong())
+                mp = player
+                if (endMs > startMs) {
+                    val task = Runnable {
+                        if (mp === player) {
+                            runCatching { player.pause() }
+                            onComplete?.invoke()
+                        }
+                    }
+                    stopTask = task
+                    handler.postDelayed(task, (endMs - startMs).toLong())
+                }
             }
+            player.prepareAsync()
         } catch (e: Exception) {
             e.printStackTrace()
             runCatching { player.release() }

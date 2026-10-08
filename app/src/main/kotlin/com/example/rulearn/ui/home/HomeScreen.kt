@@ -35,6 +35,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,9 +55,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.rulearn.core.Prefs
 import com.example.rulearn.data.AppRepository
 import com.example.rulearn.data.Lesson
 import com.example.rulearn.data.WordEntry
+import com.example.rulearn.player.AudioPlayer
+import com.example.rulearn.player.Pronounce
 import com.example.rulearn.ui.Route
 import com.example.rulearn.ui.common.EmptyHint
 import com.example.rulearn.ui.common.LocalWordArtContentColor
@@ -285,8 +291,28 @@ private fun TodayCard(
 
 @Composable
 private fun WordHeroCard(entry: WordEntry, onAnswer: (Boolean) -> Unit) {
+    val ctx = LocalContext.current
+    val player = remember { AudioPlayer(ctx) }
+    DisposableEffect(Unit) { onDispose { player.release() } }
+
     var revealed by remember(entry.ru) { mutableStateOf(false) }
     val mastery = AppRepository.masteryOf(entry.ru)
+
+    // 点击查看释义后自动播放单词读音（优先离线包 → 网络发音），并后台自动缓存。
+    // 用 try/catch 兜住，避免发音路径里的任何异常（网络/媒体/IO）冒泡到 LaunchedEffect
+    // 导致协程崩溃、整页 100% 闪退。
+    LaunchedEffect(revealed, entry.ru) {
+        if (revealed) {
+            try {
+                Pronounce.play(
+                    ctx, player, entry.ru, entry.audio,
+                    Prefs.ttsOfflineFirst(ctx), Prefs.autoDownloadTts(ctx)
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     GlassBox(
         modifier = Modifier

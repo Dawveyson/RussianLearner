@@ -85,4 +85,24 @@ object Prefs {
     fun activeBook(ctx: Context): String = sp(ctx).getString("active_book", "") ?: ""
     fun setActiveBook(ctx: Context, v: String) = sp(ctx).edit().putString("active_book", v).apply()
 
+    // ---- 开始学习：自动朗读 ----
+    fun autoPlayAudio(ctx: Context): Boolean = sp(ctx).getBoolean("auto_play_audio", true)
+    fun setAutoPlayAudio(ctx: Context, v: Boolean) = sp(ctx).edit().putBoolean("auto_play_audio", v).apply()
+
+    // ---- 开始学习：单次学习/复习单词数 ----
+    fun sessionSize(ctx: Context): Int = sp(ctx).getInt("session_size", 10).coerceIn(5, 20)
+    fun setSessionSize(ctx: Context, v: Int) = sp(ctx).edit().putInt("session_size", v.coerceIn(5, 20)).apply()
+
+    // ---- 离线语音包 ----
+    fun ttsOfflineFirst(ctx: Context): Boolean = sp(ctx).getBoolean("tts_offline_first", false)
+    fun setTtsOfflineFirst(ctx: Context, v: Boolean) = sp(ctx).edit().putBoolean("tts_offline_first", v).apply()
+
+    /** 自动下载离线发音包：播放/学习时后台静默缓存缺失的词，开启时还会拉取整包。 */
+    fun autoDownloadTts(ctx: Context): Boolean = sp(ctx).getBoolean("auto_download_tts", true)
+    fun setAutoDownloadTts(ctx: Context, v: Boolean) = sp(ctx).edit().putBoolean("auto_download_tts", v).apply()
+
+    // ---- 每天第一次学习前，是否已提示过「先复习旧单词」 ----
+    fun dailyReviewPromptDay(ctx: Context): String = sp(ctx).getString("daily_review_prompt_day", "") ?: ""
+    fun setDailyReviewPromptDay(ctx: Context, v: String) = sp(ctx).edit().putString("daily_review_prompt_day", v).apply()
+
 }
