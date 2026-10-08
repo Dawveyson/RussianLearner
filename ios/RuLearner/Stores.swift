@@ -173,7 +173,7 @@ enum BookStore {
             let ru = (((e["ru"] as? String) ?? (e["word"] as? String) ?? (e["text"] as? String)) ?? "")
                 .trimmingCharacters(in: .whitespaces)
             if ru.isEmpty { continue }
-            let zh = (((e["zh"] as? String) ?? (e["mean"] as? String) ?? (e["meaning"] as? String) ?? (e["trans"] as? String)) ?? "")
+            let zh = (((e["zh"] as? String) ?? (e["mean"] as? String) ?? (e["meaning"] as? String) ?? (e["trans"] as? String) ?? (e["translation"] as? String)) ?? "")
                 .trimmingCharacters(in: .whitespaces)
             if zh.isEmpty { continue }
             let key = ru.lowercased()
@@ -287,13 +287,20 @@ enum LessonStore {
 
     private static func findManifest(in dir: URL) -> URL? {
         guard let e = FileManager.default.enumerator(at: dir, includingPropertiesForKeys: [.isRegularFileKey]) else { return nil }
+        var firstJSON: URL?
         for case let url as URL in e {
-            if manifestNames.contains(url.lastPathComponent.lowercased()),
+            let name = url.lastPathComponent.lowercased()
+            if manifestNames.contains(name),
                (try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true {
                 return url
             }
+            // 兜底：记住第一个普通 .json 文件，实在没匹配到已知清单名时用它
+            if firstJSON == nil && name.hasSuffix(".json")
+                && (try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true {
+                firstJSON = url
+            }
         }
-        return nil
+        return firstJSON
     }
 
     /// 解压 zip，带 zip-slip 防护：所有目标必须落在 dest 内。
@@ -376,7 +383,7 @@ enum LessonStore {
                 segments.append(Segment(
                     i: (s["i"] as? Int) ?? (segments.count + 1),
                     ru: ru,
-                    zh: (s["zh"] as? String) ?? (s["mean"] as? String) ?? "",
+                    zh: (s["zh"] as? String) ?? (s["mean"] as? String) ?? (s["translation"] as? String) ?? "",
                     dur: dur > 0 ? dur : (end - start),
                     audio: (s["audio"] as? String) ?? "",
                     start: start,

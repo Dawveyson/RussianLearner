@@ -130,14 +130,26 @@ struct ImportView: View {
                 msg = "导入失败"
             }
         }
-        .fileImporter(isPresented: $importingZip, allowedContentTypes: [.zip]) { result in
+        .fileImporter(isPresented: $importingZip, allowedContentTypes: [.zip, .json, .plainText, .item]) { result in
             switch result {
             case .success(let url):
                 let ok = url.startAccessingSecurityScopedResource()
                 defer { if ok { url.stopAccessingSecurityScopedResource() } }
-                let n = repo.importLessonZip(from: url)
-                msg = n > 0 ? "已导入 \(n) 课，现有 \(repo.lessons.count) 课"
-                            : "导入失败：包里没有找到清单 JSON"
+                // 用户可能直接选了普通 JSON（词书/课程），并非 zip 音频书：
+                // 按 JSON 处理，避免误报「找不到清单 JSON」。
+                if Importer.isPlainJSON(url) {
+                    if let name = repo.importBook(from: url, name: nil), !name.isEmpty {
+                        msg = "已导入词书「\(name)」，现有 \(repo.vocabBooks.count) 本"
+                    } else {
+                        let n = repo.importLessons(from: url)
+                        msg = n > 0 ? "已导入 \(n) 课，现有 \(repo.lessons.count) 课"
+                                    : "导入失败：不是有效的词书 / 课程 JSON"
+                    }
+                } else {
+                    let n = repo.importLessonZip(from: url)
+                    msg = n > 0 ? "已导入 \(n) 课，现有 \(repo.lessons.count) 课"
+                                : "导入失败：包里没有找到清单 JSON"
+                }
             case .failure:
                 msg = "导入失败"
             }

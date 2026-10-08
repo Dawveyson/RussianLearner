@@ -32,10 +32,32 @@ enum Importer {
         return true
     }
 
+    /// 读文本：依次尝试 UTF-8（含 BOM）、UTF-16、Latin1，兼容不同编辑器/系统导出的编码。
+    static func readText(_ url: URL) -> String? {
+        guard let data = try? Data(contentsOf: url), !data.isEmpty else { return nil }
+        if let s = String(data: data, encoding: .utf8), !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return s
+        }
+        if let s = String(data: data, encoding: .utf16) { return s }
+        if let s = String(data: data, encoding: .utf16LittleEndian) { return s }
+        if let s = String(data: data, encoding: .utf16BigEndian) { return s }
+        if let s = String(data: data, encoding: .isoLatin1) { return s }
+        return nil
+    }
+
+    /// 判断文件是否为普通 JSON（而非 zip 包）：按扩展名或内容首字符判断。
+    static func isPlainJSON(_ url: URL) -> Bool {
+        let ext = url.pathExtension.lowercased()
+        if ext == "json" { return true }
+        guard let head = (try? Data(contentsOf: url)).flatMap({ String(data: $0, encoding: .utf8) })?
+            .trimmingCharacters(in: .whitespacesAndNewlines) else { return false }
+        return head.hasPrefix("{") || head.hasPrefix("[")
+    }
+
     /// 从文件导入词书，返回词书名。
     @discardableResult
     static func importBook(from url: URL, name: String?) -> String? {
-        guard let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+        guard let text = readText(url) else { return nil }
         let entries = BookStore.parse(text)
         if entries.isEmpty { return nil }
         let fallback = url.deletingPathExtension().lastPathComponent
