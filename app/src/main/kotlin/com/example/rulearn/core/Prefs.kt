@@ -105,4 +105,17 @@ object Prefs {
     fun dailyReviewPromptDay(ctx: Context): String = sp(ctx).getString("daily_review_prompt_day", "") ?: ""
     fun setDailyReviewPromptDay(ctx: Context, v: String) = sp(ctx).edit().putString("daily_review_prompt_day", v).apply()
 
+    // ---- 公告：已读 id 集合（用于“有新公告才弹窗”）----
+    fun seenAnnouncementIds(ctx: Context): Set<String> =
+        sp(ctx).getString("ann_seen_ids", "")?.split(",")?.filter { it.isNotBlank() }?.toSet() ?: emptySet()
+
+    fun markAnnouncementSeen(ctx: Context, ids: Set<String>) {
+        val merged = (seenAnnouncementIds(ctx) + ids).toSet()
+        sp(ctx).edit().putString("ann_seen_ids", merged.joinToString(",")).apply()
+    }
+
+    // ---- 公告：上次检查时间戳（用于“间隔长时间启动自动拉取”）----
+    fun lastAnnounceCheck(ctx: Context): Long = sp(ctx).getLong("ann_last_check", 0L)
+    fun setLastAnnounceCheck(ctx: Context, t: Long) = sp(ctx).edit().putLong("ann_last_check", t).apply()
+
 }

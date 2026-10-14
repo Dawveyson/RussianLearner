@@ -54,6 +54,7 @@ import com.example.rulearn.player.AudioPlayer
 import com.example.rulearn.player.Pronounce
 import com.example.rulearn.player.TtsPack
 import com.example.rulearn.ui.common.EmptyHint
+import com.example.rulearn.ui.common.RuKeyboard
 import com.example.rulearn.ui.theme.GlassCard
 import kotlin.random.Random
 
@@ -217,7 +218,7 @@ fun SpellingScreen(nav: NavController) {
         },
         bottomBar = {
             if (phase == "learn" && showRuKbd) {
-                RuSoftKeyboard(
+                RuKeyboard(
                     onChar = ::appendChar,
                     onBackspace = ::backspace,
                     onSpace = { appendChar(" ") },

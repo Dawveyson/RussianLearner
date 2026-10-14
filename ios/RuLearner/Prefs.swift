@@ -92,7 +92,6 @@ enum Prefs {
     }
 
     // MARK: 有道智云密钥
-
     static var apiKey: String {
         get { d.string(forKey: "yd_appkey") ?? "" }
         set { d.set(newValue.trimmingCharacters(in: .whitespacesAndNewlines), forKey: "yd_appkey") }
@@ -115,6 +114,25 @@ enum Prefs {
     static var activeBook: String {
         get { d.string(forKey: "active_book") ?? "" }
         set { d.set(newValue, forKey: "active_book") }
+    }
+
+    // MARK: 公告：已读 id 与上次检查时间
+
+    static var seenAnnouncementIds: Set<String> {
+        get { Set((d.string(forKey: "ann_seen_ids") ?? "")
+            .split(separator: ",").map { String($0) }.filter { !$0.isEmpty }) }
+        set { d.set(newValue.joined(separator: ","), forKey: "ann_seen_ids") }
+    }
+
+    static func markAnnouncementSeen(_ ids: [String]) {
+        var s = seenAnnouncementIds
+        for id in ids { s.insert(id) }
+        seenAnnouncementIds = s
+    }
+
+    static var lastAnnounceCheck: TimeInterval {
+        get { d.double(forKey: "ann_last_check") }
+        set { d.set(newValue, forKey: "ann_last_check") }
     }
 
     // MARK: 备份用：全部键值

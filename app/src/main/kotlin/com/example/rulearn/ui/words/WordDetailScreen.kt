@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.rulearn.ui.Route
 import com.example.rulearn.core.Prefs
 import com.example.rulearn.data.AppRepository
 import com.example.rulearn.data.OnlineDict
@@ -225,7 +226,7 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(
-                    onClick = { openYoudao(ctx, word) },
+                    onClick = { openYoudao(ctx, nav, word) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Filled.Language, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -253,11 +254,7 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
             )
             OutlinedButton(
                 onClick = {
-                    runCatching {
-                        ctx.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://ru.wiktionary.org/wiki/${Uri.encode(word)}"))
-                        )
-                    }
+                    nav.navigate(Route.webUrl("https://ru.wiktionary.org/wiki/${word}"))
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -281,8 +278,8 @@ fun WordDetailScreen(nav: NavController, rawWord: String) {
     }
 }
 
-/** 装了网易有道词典就直接打开查词，没装就跳有道网页版。 */
-private fun openYoudao(ctx: android.content.Context, word: String) {
+/** 装了网易有道词典就直接打开查词，没装就跳有道网页版（应用内浏览器）。 */
+private fun openYoudao(ctx: android.content.Context, nav: NavController, word: String) {
     val pm = ctx.packageManager
     val installed = YOUDAO_PACKAGES.firstOrNull { pkg ->
         runCatching { pm.getPackageInfo(pkg, 0); true }.getOrDefault(false)
@@ -294,8 +291,8 @@ private fun openYoudao(ctx: android.content.Context, word: String) {
         }
         if (runCatching { ctx.startActivity(intent) }.isSuccess) return
     }
-    val web = "https://dict.youdao.com/result?word=${Uri.encode(word)}&lang=ru"
-    runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(web))) }
+    val web = "https://dict.youdao.com/result?word=${word}&lang=ru"
+    nav.navigate(Route.webUrl(web))
 }
 
 /** 打开系统 TTS 引擎安装页；没有可用引擎时改为打开引擎下载页。 */

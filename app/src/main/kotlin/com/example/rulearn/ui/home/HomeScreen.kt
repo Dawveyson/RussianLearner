@@ -1,5 +1,7 @@
 package com.example.rulearn.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.GraphicEq
@@ -30,6 +33,7 @@ import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -46,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.Mail
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,6 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.rulearn.ui.AnnounceUi
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.rulearn.core.Prefs
@@ -74,6 +80,7 @@ import com.example.rulearn.ui.theme.GlassToken
 
 @Composable
 fun HomeScreen(nav: NavController) {
+    val ctx = LocalContext.current
     val stats by AppRepository.stats.collectAsStateWithLifecycle()
     val lessons by AppRepository.lessons.collectAsStateWithLifecycle()
     val vocab by AppRepository.vocabBooks.collectAsStateWithLifecycle()
@@ -189,6 +196,17 @@ fun HomeScreen(nav: NavController) {
                     modifier = Modifier.weight(1f)
                 ) { nav.navigate(Route.WORDS) }
             }
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                QuickAction(
+                    icon = Icons.Filled.Mail,
+                    title = "订阅每日一词",
+                    sub = "邮件通讯",
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    nav.navigate(Route.webUrl("https://learnrussian101.com/zh/ding-yue-wo-men-de-xin-wen-tong-xun/"))
+                }
+            }
         }
     }
 }
@@ -208,28 +226,51 @@ private fun GreetingHeader(streak: Int, total: Int) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        if (streak > 0) {
-            Surface(
-                shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.tertiaryContainer
-            ) {
-                Row(
-                    Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // 公告入口：火花（连续打卡）旁的收起圆形按钮，未读时显示红点
+            Box(contentAlignment = Alignment.TopEnd) {
+                IconButton(onClick = { AnnounceUi.openRequest.value = true }) {
                     Icon(
-                        Icons.Filled.LocalFireDepartment,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                        modifier = Modifier.size(18.dp)
+                        Icons.Filled.Campaign,
+                        contentDescription = "公告",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Text(
-                        "连续 $streak 天",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        modifier = Modifier.padding(start = 4.dp)
+                }
+                if (AnnounceUi.unseenCount.value > 0) {
+                    Box(
+                        Modifier
+                            .size(9.dp)
+                            .background(MaterialTheme.colorScheme.error, RoundedCornerShape(50))
                     )
+                }
+            }
+            if (streak > 0) {
+                Surface(
+                    shape = RoundedCornerShape(50),
+                    color = MaterialTheme.colorScheme.tertiaryContainer
+                ) {
+                    Row(
+                        Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Filled.LocalFireDepartment,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            "连续 $streak 天",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
                 }
             }
         }

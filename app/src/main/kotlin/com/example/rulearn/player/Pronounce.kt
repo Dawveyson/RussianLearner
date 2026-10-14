@@ -20,13 +20,17 @@ object Pronounce {
         preferOffline: Boolean = false,
         autoDownload: Boolean = false
     ) {
+        val w = word.trim().lowercase()
         // 自动下载：播放时若离线包缺失，后台静默补缓存（下一个词起就能离线读）
-        if (autoDownload && entryAudio.isBlank() && !TtsPack.has(ctx, word)) {
-            TtsPack.preload(ctx, listOf(word))
+        if (autoDownload && entryAudio.isBlank() && !TtsPack.has(ctx, w)) {
+            TtsPack.preload(ctx, listOf(w))
         }
         when {
+            // 词条自带音频最高优先
             entryAudio.isNotBlank() -> player.play(entryAudio)
-            preferOffline && TtsPack.has(ctx, word) -> player.play(TtsPack.path(ctx, word))
+            // 本地离线包命中：直接播放缓存文件，秒出声、不依赖联网/系统 TTS（解决“发音慢”）
+            TtsPack.has(ctx, w) -> player.play(TtsPack.path(ctx, w))
+            // 否则才走网络发音兜底
             else -> Speaker.speak(word, preferNetwork = true)
         }
     }

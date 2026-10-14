@@ -5,6 +5,7 @@ struct HomeView: View {
     @State private var showSpelling = false
     @State private var showQuiz = false
     @State private var showReview = false
+    @State private var showAnnounce = false
 
     private var goal: Int { max(repo.stats.dailyGoal, 1) }
     private var ratio: Double {
@@ -18,6 +19,7 @@ struct HomeView: View {
                     progressCard
                     statsCard
                     practiceCard
+                    subscriptionCard
                     dailyWordCard
                 }
                 .padding(16)
@@ -27,6 +29,76 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showSpelling) { SpellingView() }
             .navigationDestination(isPresented: $showQuiz) { QuizView() }
             .navigationDestination(isPresented: $showReview) { ReviewView() }
+            .toolbar {
+                // 公告入口：火花（连续打卡）旁的按钮，点击从服务器拉取并弹窗
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task {
+                            await RemoteConfigStore.shared.refresh()
+                            showAnnounce = true
+                        }
+                    } label: { Image(systemName: "megaphone.fill") }
+                }
+            }
+            .alert("公告", isPresented: $showAnnounce) {
+                Button("关闭") {
+                    let ids = RemoteConfigStore.shared.config?.announcements.map { $0.id } ?? []
+                    Prefs.markAnnouncementSeen(ids)
+                }
+            } message: {
+                let anns = RemoteConfigStore.shared.config?.announcements ?? []
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if anns.isEmpty {
+                            Text("暂无可显示公告。")
+                        } else {
+                            ForEach(anns) { a in
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(a.title.isEmpty ? "公告" : a.title).font(.headline)
+                                    if !a.date.isEmpty {
+                                        Text(a.date).font(.caption).foregroundStyle(.secondary)
+                                    }
+                                    Text(a.body)
+                                }
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 320)
+                }
+            }
+            // 冷启动：拉取配置，若有未读公告直接弹窗
+            .task {
+                await RemoteConfigStore.shared.refresh()
+                let seen = Prefs.seenAnnouncementIds
+                let unseen = RemoteConfigStore.shared.config?.announcements.filter { !seen.contains($0.id) } ?? []
+                if !unseen.isEmpty { showAnnounce = true }
+            }
+        }
+    }
+
+    private var subscriptionCard: some View {
+        GlassCard {
+            Button {
+                if let url = URL(string: "https://learnrussian101.com/zh/ding-yue-wo-men-de-xin-wen-tong-xun/") {
+                    UIApplication.shared.open(url)
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "envelope.fill")
+                        .font(.title2)
+                        .foregroundStyle(.tint)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("订阅每日一词").font(.headline)
+                        Text("邮件通讯 · learnrussian101.com")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "arrow.up.right.square")
+                        .foregroundStyle(.tint)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
         }
     }
 

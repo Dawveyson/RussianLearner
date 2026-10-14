@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,8 @@ import com.example.rulearn.data.BackupStore
 import com.example.rulearn.data.RemoteConfigCache
 import com.example.rulearn.player.Speaker
 import com.example.rulearn.player.TtsPack
+import com.example.rulearn.player.TtsPackService
+import com.example.rulearn.ui.AnnounceUi
 import com.example.rulearn.ui.Route
 import com.example.rulearn.ui.theme.GlassCard
 import kotlinx.coroutines.Dispatchers
@@ -82,17 +85,36 @@ fun SettingsScreen(nav: NavController) {
 
     // ---- 离线语音包 ----
     val practiceWords = remember { AppRepository.practiceBooks().flatMap { it.entries }.map { it.ru }.distinct() }
-    var cachedCount by remember { mutableStateOf(TtsPack.count(ctx)) }
-    var packBusy by remember { mutableStateOf(false) }
-    var packDone by remember { mutableStateOf(0) }
-    var packTotal by remember { mutableStateOf(0) }
+    var cachedCount by remember { mutableStateOf(TtsPack.cachedCount(ctx, practiceWords)) }
+    // 真正“全部下载完”的判定：词表非空 且 词表内每个词都已缓存
+    val allDownloaded = practiceWords.isNotEmpty() && cachedCount >= practiceWords.size
+
+    // 订阅后台下载服务的运行状态与进度：下载在 TtsPackService 里跑，退出本页不中断
+    val svcRunning by TtsPackService.running.collectAsStateWithLifecycle()
+    val svcProgress by TtsPackService.progress.collectAsStateWithLifecycle()
+    val svcDone = svcProgress.first
+    val svcTotal = svcProgress.second
+
+    // 后台下载结束（或本就未运行）时刷新已缓存数量
+    LaunchedEffect(svcRunning) {
+        if (!svcRunning) cachedCount = TtsPack.cachedCount(ctx, practiceWords)
+    }
 
     // ---- 备份与更新 ----
     var backupMsg by remember { mutableStateOf("") }
     var showUpdate by remember { mutableStateOf(false) }
-    var showAnnounce by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { RemoteConfigCache.refresh() }
+
+    // 退出本页：若开启自动下载且还有词未缓存，转交前台服务在后台继续下载，
+    // 并通过进度通知（Android 上的 Live Activity）实时展示进度。
+    DisposableEffect(Unit) {
+        onDispose {
+            if (Prefs.autoDownloadTts(ctx) && practiceWords.any { !TtsPack.has(ctx, it) }) {
+                runCatching { TtsPackService.start(ctx) }
+            }
+        }
+    }
 
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -221,8 +243,15 @@ fun SettingsScreen(nav: NavController) {
 
                     Text("离线语音包", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
                     Text(
-                        "把每个单词的发音下载缓存在本机，之后发音不依赖系统 TTS、也不依赖联网。" +
-                            "当前已缓存 $cachedCount / ${practiceWords.size} 个词。",
+                        if (practiceWords.isEmpty()) {
+                            "把每个单词的发音下载缓存在本机，之后发音不依赖系统 TTS、也不依赖联网。" +
+                                "当前没有可缓存的词（先去导入词库 / 教材）。"
+                        } else if (allDownloaded) {
+                            "每个单词的发音都已下载到本机，发音不依赖系统 TTS、也不依赖联网。已缓存 ${practiceWords.size} / ${practiceWords.size} 个词 ✓"
+                        } else {
+                            "把每个单词的发音下载缓存在本机，之后发音不依赖系统 TTS、也不依赖联网。" +
+                                "当前已缓存 $cachedCount / ${practiceWords.size} 个词。"
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -245,25 +274,19 @@ fun SettingsScreen(nav: NavController) {
                                 autoDl = it
                                 Prefs.setAutoDownloadTts(ctx, it)
                                 if (it && practiceWords.isNotEmpty()) {
-                                    scope.launch {
-                                        packBusy = true; packDone = 0; packTotal = practiceWords.size
-                                        withContext(Dispatchers.IO) {
-                                            TtsPack.download(ctx, practiceWords) { d, t -> packDone = d; packTotal = t }
-                                        }
-                                        cachedCount = TtsPack.count(ctx)
-                                        packBusy = false
-                                    }
+                                    // 后台服务下载（只下缺失的词），退出页面不中断
+                                    TtsPackService.start(ctx)
                                 }
                             }
                         )
                     }
-                    if (packBusy) {
+                    if (svcRunning) {
                         LinearProgressIndicator(
-                            progress = { if (packTotal == 0) 0f else packDone.toFloat() / packTotal },
+                            progress = { if (svcTotal == 0) 0f else svcDone.toFloat() / svcTotal },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Text(
-                            "正在下载 $packDone / $packTotal …",
+                            "正在下载 $svcDone / $svcTotal（后台进行，退出页面不中断）…",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -271,24 +294,18 @@ fun SettingsScreen(nav: NavController) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Button(
                             onClick = {
-                                scope.launch {
-                                    packBusy = true; packDone = 0; packTotal = practiceWords.size
-                                    withContext(Dispatchers.IO) {
-                                        TtsPack.download(ctx, practiceWords) { d, t -> packDone = d; packTotal = t }
-                                    }
-                                    cachedCount = TtsPack.count(ctx)
-                                    packBusy = false
-                                }
+                                // 后台服务下载（只下本地缺失的词），退出页面不中断
+                                TtsPackService.start(ctx)
                             },
-                            enabled = !packBusy && practiceWords.isNotEmpty(),
+                            enabled = !svcRunning && practiceWords.isNotEmpty() && !allDownloaded,
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Filled.VolumeUp, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
-                            Text(if (packBusy) "下载中…" else "下载离线语音包")
+                            Text(if (svcRunning) "下载中…" else if (allDownloaded) "已全部下载" else "下载离线语音包")
                         }
                         if (cachedCount > 0) {
                             OutlinedButton(
-                                onClick = { TtsPack.clear(ctx); cachedCount = TtsPack.count(ctx) },
+                                onClick = { TtsPack.clear(ctx); cachedCount = TtsPack.cachedCount(ctx, practiceWords) },
                                 modifier = Modifier.weight(1f)
                             ) { Text("清除缓存") }
                         }
@@ -307,30 +324,30 @@ fun SettingsScreen(nav: NavController) {
 
                     OutlinedButton(
                         onClick = {
-                            if (Speaker.hasAnyTtsEngine(ctx)) {
+                            // 优先跳转 Google Play Store 的 Google TTS 引擎页面（安装 / 更新 / 打开）
+                            val market = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=com.google.android.tts")
+                            )
+                            if (runCatching { ctx.startActivity(market) }.isFailure) {
+                                // 没有 Play 商店：回退到系统 TTS 数据安装页，再回退到网页版 Play
                                 runCatching { ctx.startActivity(Intent("android.speech.tts.action.INSTALL_TTS_DATA")) }
-                            } else {
-                                // 没有引擎时系统安装页打不开，去引擎下载页（可能被区域限制）
-                                val market = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=com.google.android.tts")
-                                )
-                                if (runCatching { ctx.startActivity(market) }.isFailure) {
-                                    runCatching {
-                                        ctx.startActivity(
-                                            Intent(
-                                                Intent.ACTION_VIEW,
-                                                Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.tts")
+                                    .onFailure {
+                                        runCatching {
+                                            ctx.startActivity(
+                                                Intent(
+                                                    Intent.ACTION_VIEW,
+                                                    Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.tts")
+                                                )
                                             )
-                                        )
+                                        }
                                     }
-                                }
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Filled.VolumeUp, contentDescription = null, modifier = Modifier.padding(end = 6.dp))
-                        Text(if (Speaker.hasAnyTtsEngine(ctx)) "安装 / 下载俄语语音数据" else "获取系统 TTS 引擎（可能被区域限制）")
+                        Text("获取系统 TTS 引擎（Google Play）")
                     }
                 }
             }
@@ -386,7 +403,7 @@ fun SettingsScreen(nav: NavController) {
                             modifier = Modifier.weight(1f)
                         ) { Text("检查更新") }
                         OutlinedButton(
-                            onClick = { showAnnounce = true },
+                            onClick = { AnnounceUi.openRequest.value = true },
                             modifier = Modifier.weight(1f)
                         ) { Text("查看公告") }
                     }
@@ -464,35 +481,6 @@ fun SettingsScreen(nav: NavController) {
             },
             dismissButton = {
                 TextButton(onClick = { showUpdate = false }) { Text("关闭") }
-            }
-        )
-    }
-
-    // 公告对话框
-    if (showAnnounce) {
-        val anns = RemoteConfigCache.config.value?.announcements ?: emptyList()
-        AlertDialog(
-            onDismissRequest = { showAnnounce = false },
-            title = { Text("公告") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    if (anns.isEmpty()) {
-                        Text("暂无可显示公告。")
-                    } else {
-                        anns.forEach { a ->
-                            Column {
-                                Text(a.title.ifBlank { "公告" }, fontWeight = FontWeight.Bold)
-                                if (a.date.isNotBlank()) {
-                                    Text(a.date, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                                Text(a.body)
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showAnnounce = false }) { Text("关闭") }
             }
         )
     }

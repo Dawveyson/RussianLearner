@@ -1,0 +1,78 @@
+# Android 发布流水线
+# 触发：推送 v* 标签，或手动 workflow_dispatch。
+# 产物：Android APK / AAB，汇总成一个 GitHub Release。
+#
+# 说明：
+#  - Android 作业运行在 ubuntu（可构建 APK/AAB），需要 Android SDK（action 自动安装）。
+#  - Android 正式签名通过 Secrets 提供（RU_KEYSTORE 等）；未配置时自动回退 debug 签名。
+#  - 当前项目只维护 Android，Windows exe / macOS dmg 的构建作业已移除。
+
+name: Release (Android)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # ---------- Android ----------
+  android:
+    name: Android AAB / APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Release APK + AAB
+        run: ./gradlew :app:assembleRelease :app:bundleRelease
+        env:
+          RU_KEYSTORE: ${{ secrets.RU_KEYSTORE }}
+          RU_KEYSTORE_PASSWORD: ${{ secrets.RU_KEYSTORE_PASSWORD }}
+          RU_KEY_ALIAS: ${{ secrets.RU_KEY_ALIAS }}
+          RU_KEY_PASSWORD: ${{ secrets.RU_KEY_PASSWORD }}
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+  # ---------- 汇总发布 ----------
+  release:
+    name: Publish GitHub Release
+    needs: [android]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/android/**/*.apk
+            artifacts/android/**/*.aab
+          generate_release_notes: true

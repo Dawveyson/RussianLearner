@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AlphabetView: View {
     private let cols = Array(repeating: GridItem(.flexible(), spacing: 10), count: 3)
+    private let vowelsPracticeURL = "https://learnrussian101.com/zh/russian-vowels-zh/"
 
     var body: some View {
         NavigationStack {
@@ -10,6 +11,30 @@ struct AlphabetView: View {
                     GlassCard {
                         Text("西里尔字母表（33 个字母）。点字母可朗读字母名与例词。")
                             .font(.subheadline).foregroundStyle(.secondary)
+                    }
+                    // 外部元音发音练习入口
+                    GlassCard {
+                        Button {
+                            if let url = URL(string: vowelsPracticeURL) {
+                                UIApplication.shared.open(url)
+                            }
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "globe")
+                                    .font(.title2)
+                                    .foregroundStyle(.tint)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("俄语元音发音练习").font(.headline)
+                                    Text("外部网站 · learnrussian101.com")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "arrow.up.right.square")
+                                    .foregroundStyle(.tint)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .buttonStyle(.plain)
                     }
                     LazyVGrid(columns: cols, spacing: 10) {
                         ForEach(CYRILLIC_ALPHABET) { l in

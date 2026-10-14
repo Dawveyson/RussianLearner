@@ -2,6 +2,7 @@ package com.example.rulearn.ui.words
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -196,6 +198,7 @@ private fun SearchTab(nav: NavController) {
     val lessons by AppRepository.lessons.collectAsStateWithLifecycle()
     var query by remember { mutableStateOf("") }
     var showKb by remember { mutableStateOf(true) }
+    val keyboardController = LocalSoftwareKeyboardController.current
     // 依赖词书，导入/删除词库后搜索结果才会重算
     val results = remember(query, vocab, lessons) { AppRepository.search(query) }
 
@@ -206,46 +209,59 @@ private fun SearchTab(nav: NavController) {
             label = { Text("输入俄语单词 / 中文") },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
             trailingIcon = {
-                IconButton(onClick = { showKb = !showKb }) {
+                IconButton(onClick = {
+                    showKb = !showKb
+                    // 切到自定义键盘时收起系统 IME，避免两个键盘同时出现
+                    if (showKb) keyboardController?.hide()
+                }) {
                     Text(if (showKb) "⌨" else "🔠", fontSize = 18.sp)
                 }
             },
+            // 自定义软键盘显示时把输入框置为只读：既不影响自定义键盘写入 query，
+            // 又彻底阻止系统输入法（IME）弹出，解决“两个键盘打架”的问题。
+            readOnly = showKb,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             singleLine = true
         )
 
-        if (results.isEmpty()) {
-            EmptyHint(if (query.isBlank()) "输入俄语即可查词，例如 «спасибо»" else "没找到 «$query»")
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().weight(1f, fill = false),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(results, key = { it.ru }) { e ->
-                    GlassCard(
-                        onClick = {
-                            nav.navigate("${Route.WORD.substringBefore("/{")}/${URLEncoder.encode(e.ru, "UTF-8")}")
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(Modifier.fillMaxWidth().padding(14.dp)) {
-                            Column(Modifier.weight(1f)) {
-                                Text(e.ru, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                                Text(
-                                    e.zh.ifBlank { "（无释义）" },
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            IconButton(onClick = { Speaker.speak(e.ru, false) }) {
-                                Icon(
-                                    Icons.Filled.VolumeUp,
-                                    contentDescription = "朗读 ${e.ru}",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
+        // 内容区始终占满剩余空间，把自定义键盘钉在屏幕底部（而不是浮在中间）
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            if (results.isEmpty()) {
+                EmptyHint(
+                    if (query.isBlank()) "输入俄语即可查词，例如 «спасибо»" else "没找到 «$query»",
+                    Modifier.fillMaxSize()
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(results, key = { it.ru }) { e ->
+                        GlassCard(
+                            onClick = {
+                                nav.navigate("${Route.WORD.substringBefore("/{")}/${URLEncoder.encode(e.ru, "UTF-8")}")
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(Modifier.fillMaxWidth().padding(14.dp)) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(e.ru, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                                    Text(
+                                        e.zh.ifBlank { "（无释义）" },
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                IconButton(onClick = { Speaker.speak(e.ru, false) }) {
+                                    Icon(
+                                        Icons.Filled.VolumeUp,
+                                        contentDescription = "朗读 ${e.ru}",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
                             }
                         }
                     }

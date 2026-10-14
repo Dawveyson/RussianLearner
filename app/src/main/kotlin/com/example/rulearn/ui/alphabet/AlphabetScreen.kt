@@ -1,5 +1,7 @@
 package com.example.rulearn.ui.alphabet
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -59,10 +63,14 @@ import com.example.rulearn.ui.theme.GlassBox
 import com.example.rulearn.ui.theme.GlassCard
 import kotlin.random.Random
 
+// 外部俄语元音发音练习（101LearnRussian 网站，含中文讲解）
+private const val VOWELS_PRACTICE_URL = "https://learnrussian101.com/zh/russian-vowels-zh/"
+
 @Composable
 fun AlphabetScreen(nav: NavController) {
     var tab by remember { mutableIntStateOf(0) }
     val tabs = listOf("字母表", "字母测验")
+    val ctx = LocalContext.current
 
     Column(Modifier.fillMaxSize()) {
         Surface(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f)) {
@@ -72,6 +80,42 @@ fun AlphabetScreen(nav: NavController) {
                 contentColor = MaterialTheme.colorScheme.primary
             ) {
                 tabs.forEachIndexed { i, t -> Tab(selected = tab == i, onClick = { tab = i }, text = { Text(t) }) }
+            }
+        }
+        // 外部元音发音练习入口
+        GlassCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .clickable {
+                    nav.navigate(Route.webUrl(VOWELS_PRACTICE_URL))
+                }
+        ) {
+            Row(
+                Modifier.fillMaxWidth().padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Filled.Language,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(26.dp)
+                )
+                Column(Modifier.padding(start = 12.dp).weight(1f)) {
+                    Text("俄语元音发音练习", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        "外部网站 · learnrussian101.com",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
+                Icon(
+                    Icons.Filled.OpenInNew,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
         when (tab) {
